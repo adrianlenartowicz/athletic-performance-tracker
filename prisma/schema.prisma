@@ -5,3 +5,43 @@ generator client {
 datasource db {
   provider = "postgresql"
 }
+
+model User {
+  id       String   @id @default(cuid())
+  email    String   @unique
+  role     UserRole
+  children Child[]
+
+  createdAt DateTime @default(now())
+}
+
+model Child {
+  id        String   @id @default(cuid())
+  name      String
+  birthDate DateTime
+
+  parentId String
+  parent   User   @relation(fields: [parentId], references: [id])
+
+  results TestResult[]
+
+  createdAt DateTime @default(now())
+}
+
+model TestResult {
+  id      String @id @default(cuid())
+  childId String
+  child   Child  @relation(fields: [childId], references: [id])
+
+  testType String
+  value    Float
+  unit     String
+  testedAt DateTime
+
+  createdAt DateTime @default(now())
+}
+
+enum UserRole {
+  PARENT
+  TRAINER
+}
