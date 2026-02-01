@@ -33,7 +33,7 @@ type Props = {
 
 export function ProgressChart({
   data,
-  title = "Progress over time",
+  title = "Postępy w czasie",
 }: Props) {
   const chartConfig = {
     value: {

@@ -21,7 +21,7 @@ export function TestProgressWidget({ results }: Props) {
 
   if (!progress) {
     return (
-      <WidgetCard title="Progres">
+      <WidgetCard title="Sprint 20m">
         <p className="text-sm text-muted-foreground">
           Za mało danych do wyliczenia progresu
         </p>
@@ -32,7 +32,7 @@ export function TestProgressWidget({ results }: Props) {
   const isImprovement = progress.absoluteChange < 0;
 
   return (
-    <WidgetCard title="Progres">
+    <WidgetCard title="Sprint 20m">
       <div className="space-y-4">
         <div>
           <div className="text-2xl font-semibold">
