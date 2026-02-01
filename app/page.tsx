@@ -6,11 +6,12 @@ import { getChildrenWithResults } from "@/lib/queries/children";
 export default async function Home() {
   const children = await getChildrenWithResults();
   const child = children[0];
-  console.log('child', child);
-  console.log('results', child.results);
+  const DEFAULT_TEST_TYPE = "sprint_20m";
+  const sprintResults = child.results.filter(result => result.testType === DEFAULT_TEST_TYPE);
+
   return (
     <DashboardLayout>
-      <TestProgressWidget results={child.results} />
+      <TestProgressWidget results={sprintResults} />
     </DashboardLayout>
   );
 }
