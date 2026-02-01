@@ -5,9 +5,8 @@ export default async function Home() {
     include: { results: true },
   });
 
-  const users = await prisma.user.findMany()
-  console.log('USERS', users)
-
+  const users = await prisma.user.findMany();
+  console.log('USERS', users);
 
   return (
     <main style={{ padding: 24 }}>

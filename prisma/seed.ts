@@ -4,26 +4,26 @@ import { UserRole } from '@prisma/client';
 async function main() {
   const parent = await prisma.user.create({
     data: {
-      email: "parent@test.pl",
+      email: 'parent@test.pl',
       role: UserRole.PARENT,
       children: {
         create: [
           {
-            name: "Jan",
-            birthDate: new Date("2014-05-10"),
+            name: 'Jan',
+            birthDate: new Date('2014-05-10'),
             results: {
               create: [
                 {
-                  testType: "sprint_20m",
+                  testType: 'sprint_20m',
                   value: 4.2,
-                  unit: "s",
-                  testedAt: new Date("2024-01-01"),
+                  unit: 's',
+                  testedAt: new Date('2024-01-01'),
                 },
                 {
-                  testType: "sprint_20m",
+                  testType: 'sprint_20m',
                   value: 3.9,
-                  unit: "s",
-                  testedAt: new Date("2024-04-01"),
+                  unit: 's',
+                  testedAt: new Date('2024-04-01'),
                 },
               ],
             },
@@ -33,7 +33,7 @@ async function main() {
     },
   });
 
-  console.log("Seed completed:", parent.email);
+  console.log('Seed completed:', parent.email);
 }
 
 main()
