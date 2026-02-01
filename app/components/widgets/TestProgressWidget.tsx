@@ -1,6 +1,6 @@
-import { WidgetCard } from "./WidgetCard";
-import { calculateStepProgress } from "@/lib/domain/progress";
-import { ProgressChart } from "./ProgressChart";
+import { WidgetCard } from './WidgetCard';
+import { calculateStepProgress } from '@/lib/domain/progress';
+import { ProgressChart } from './ProgressChart';
 
 type TestMeasurement = {
   value: number;
@@ -15,16 +15,16 @@ export function TestProgressWidget({ results }: Props) {
   const progress = calculateStepProgress(results);
 
   const chartData = results.map((r) => ({
-    label: r.testedAt.toLocaleDateString(),
+    label: r.testedAt.toLocaleDateString('pl-PL', {
+      month: 'long',
+    }),
     value: r.value,
   }));
 
   if (!progress) {
     return (
       <WidgetCard title="Sprint 20m">
-        <p className="text-sm text-muted-foreground">
-          Za mało danych do wyliczenia progresu
-        </p>
+        <p className="text-sm text-muted-foreground">Za mało danych do wyliczenia progresu</p>
       </WidgetCard>
     );
   }
@@ -36,7 +36,7 @@ export function TestProgressWidget({ results }: Props) {
       <div className="space-y-4">
         <div>
           <div className="text-2xl font-semibold">
-            {isImprovement ? "+" : ""}
+            {isImprovement ? '+' : ''}
             {Math.abs(progress.percentChange).toFixed(1)}%
           </div>
           <p className="text-sm text-muted-foreground">

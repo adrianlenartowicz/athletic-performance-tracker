@@ -1,72 +1,51 @@
-"use client"
+'use client';
 
-import {
-  CartesianGrid,
-  Line,
-  LineChart,
-  XAxis,
-} from "recharts"
+import { CartesianGrid, Line, LineChart, XAxis } from 'recharts';
 
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card"
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
 import {
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
   type ChartConfig,
-} from "@/components/ui/chart"
+} from '@/components/ui/chart';
 
 type ChartPoint = {
-  label: string
-  value: number
-}
+  label: string;
+  value: number;
+};
 
 type Props = {
-  data: ChartPoint[]
-  title?: string
-}
+  data: ChartPoint[];
+  title?: string;
+};
 
-export function ProgressChart({
-  data,
-  title = "Postępy w czasie",
-}: Props) {
+export function ProgressChart({ data, title = 'Postępy w czasie' }: Props) {
   const chartConfig = {
     value: {
-      label: "Result",
-      color: "var(--chart-1)",
+      label: 'Result',
+      color: 'var(--chart-1)',
     },
-  } satisfies ChartConfig
+  } satisfies ChartConfig;
 
   return (
     <Card>
       <CardHeader className="pb-2">
-        <CardTitle className="text-sm font-medium">
-          {title}
-        </CardTitle>
+        <CardTitle className="text-sm font-medium">{title}</CardTitle>
       </CardHeader>
 
       <CardContent>
         <ChartContainer config={chartConfig}>
-          <LineChart
-            data={data}
-            margin={{ left: 12, right: 12 }}
-          >
+          <LineChart data={data} margin={{ left: 12, right: 12 }}>
             <CartesianGrid vertical={false} />
             <XAxis
               dataKey="label"
+              padding={{ left: 10, right: 10 }}
               tickLine={false}
               axisLine={false}
-              tickMargin={8}
             />
-            <ChartTooltip
-              cursor={false}
-              content={<ChartTooltipContent hideLabel />}
-            />
+            <ChartTooltip cursor={false} content={<ChartTooltipContent hideLabel />} />
             <Line
               dataKey="value"
               type="linear"
@@ -78,5 +57,5 @@ export function ProgressChart({
         </ChartContainer>
       </CardContent>
     </Card>
-  )
+  );
 }
