@@ -1,6 +1,6 @@
 import prisma from '@/lib/prisma';
 import { DashboardLayout } from './components/dashboard/dashboard';
-import { WidgetCard } from "./components/widgets/WidgetCard";
+import { WidgetCard } from './components/widgets/WidgetCard';
 
 export default function Home() {
   return (
