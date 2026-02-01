@@ -1,11 +1,17 @@
 import prisma from '@/lib/prisma';
 import { DashboardLayout } from './components/dashboard/dashboard';
+import { WidgetCard } from "./components/widgets/WidgetCard";
 
-export default async function Home() {
+export default function Home() {
   return (
     <DashboardLayout>
-      <div className="h-48 rounded-lg border bg-background" />
-      <div className="h-48 rounded-lg border bg-background" />
+      <WidgetCard title="Historia testów">
+        <div className="h-32 rounded bg-muted" />
+      </WidgetCard>
+
+      <WidgetCard title="Progres">
+        <div className="h-32 rounded bg-muted" />
+      </WidgetCard>
     </DashboardLayout>
   );
 }
