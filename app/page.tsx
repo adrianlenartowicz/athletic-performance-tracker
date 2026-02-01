@@ -1,17 +1,16 @@
 import prisma from '@/lib/prisma';
 import { DashboardLayout } from './components/dashboard/dashboard';
-import { WidgetCard } from './components/widgets/WidgetCard';
+import { TestProgressWidget } from './components/widgets/TestProgressWidget';
+import { getChildrenWithResults } from "@/lib/queries/children";
 
-export default function Home() {
+export default async function Home() {
+  const children = await getChildrenWithResults();
+  const child = children[0];
+  console.log('child', child);
+  console.log('results', child.results);
   return (
     <DashboardLayout>
-      <WidgetCard title="Historia testów">
-        <div className="h-32 rounded bg-muted" />
-      </WidgetCard>
-
-      <WidgetCard title="Progres">
-        <div className="h-32 rounded bg-muted" />
-      </WidgetCard>
+      <TestProgressWidget results={child.results} />
     </DashboardLayout>
   );
 }
