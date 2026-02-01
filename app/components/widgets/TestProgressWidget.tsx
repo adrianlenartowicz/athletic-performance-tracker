@@ -1,5 +1,6 @@
 import { WidgetCard } from "./WidgetCard";
 import { calculateStepProgress } from "@/lib/domain/progress";
+import { ProgressChart } from "./ProgressChart";
 
 type TestMeasurement = {
   value: number;
@@ -12,6 +13,11 @@ type Props = {
 
 export function TestProgressWidget({ results }: Props) {
   const progress = calculateStepProgress(results);
+
+  const chartData = results.map((r) => ({
+    label: r.testedAt.toLocaleDateString(),
+    value: r.value,
+  }));
 
   if (!progress) {
     return (
@@ -27,15 +33,18 @@ export function TestProgressWidget({ results }: Props) {
 
   return (
     <WidgetCard title="Progres">
-      <div className="space-y-2">
-        <div className="text-2xl font-semibold">
-          {isImprovement ? "+" : ""}
-          {Math.abs(progress.percentChange).toFixed(1)}%
+      <div className="space-y-4">
+        <div>
+          <div className="text-2xl font-semibold">
+            {isImprovement ? "+" : ""}
+            {Math.abs(progress.percentChange).toFixed(1)}%
+          </div>
+          <p className="text-sm text-muted-foreground">
+            {progress.from} → {progress.to}
+          </p>
         </div>
 
-        <p className="text-sm text-muted-foreground">
-          {progress.from} → {progress.to}
-        </p>
+        <ProgressChart data={chartData} />
       </div>
     </WidgetCard>
   );
