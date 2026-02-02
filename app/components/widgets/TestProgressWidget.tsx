@@ -37,7 +37,7 @@ export function TestProgressWidget({ testType, results }: Props) {
     test.betterDirection === 'lower' ? progress.absoluteChange < 0 : progress.absoluteChange > 0;
 
   return (
-    <WidgetCard title="Sprint 20 m">
+    <WidgetCard title={test.label}>
       <div className="space-y-4">
         <div className="flex items-end gap-6">
           <div>
