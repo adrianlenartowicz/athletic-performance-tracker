@@ -1,6 +1,7 @@
 import { WidgetCard } from './WidgetCard';
 import { calculateStepProgress } from '@/lib/domain/progress';
 import { ProgressChart } from './ProgressChart';
+import { getTestDefinition, TestType } from '@/lib/domain/tests';
 
 type TestMeasurement = {
   value: number;
@@ -8,10 +9,12 @@ type TestMeasurement = {
 };
 
 type Props = {
+  testType: TestType;
   results: TestMeasurement[];
 };
 
-export function TestProgressWidget({ results }: Props) {
+export function TestProgressWidget({ testType, results }: Props) {
+  const test = getTestDefinition(testType);
   const progress = calculateStepProgress(results);
 
   const chartData = results.map((r) => ({
@@ -24,13 +27,14 @@ export function TestProgressWidget({ results }: Props) {
 
   if (!progress) {
     return (
-      <WidgetCard title="Sprint 20 m">
+      <WidgetCard title={test.label}>
         <p className="text-sm text-muted-foreground">Za mało danych do wyliczenia progresu</p>
       </WidgetCard>
     );
   }
 
-  const isImprovement = progress.absoluteChange < 0;
+  const isImprovement =
+    test.betterDirection === 'lower' ? progress.absoluteChange < 0 : progress.absoluteChange > 0;
 
   return (
     <WidgetCard title="Sprint 20 m">
@@ -46,7 +50,7 @@ export function TestProgressWidget({ results }: Props) {
 
           <div className="border-l pl-6">
             <div className="text-sm font-medium">
-              {progress.from.toFixed(1)} s → {progress.to.toFixed(1)} s
+              {progress.from.toFixed(1)} {test.unit} → {progress.to.toFixed(1)} {test.unit}
             </div>
             <p className="text-xs text-muted-foreground">pierwszy → ostatni pomiar</p>
           </div>

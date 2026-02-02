@@ -1,17 +1,20 @@
 import prisma from '@/lib/prisma';
 import { DashboardLayout } from './components/dashboard/dashboard';
 import { TestProgressWidget } from './components/widgets/TestProgressWidget';
-import { getChildrenWithResults } from '@/lib/queries/children';
+import { getChildDashboard } from '@/lib/queries/dashboard';
 
 export default async function Home() {
-  const children = await getChildrenWithResults();
-  const child = children[0];
-  const DEFAULT_TEST_TYPE = 'sprint_20m';
-  const sprintResults = child.results.filter((result) => result.testType === DEFAULT_TEST_TYPE);
+  const dashboard = await getChildDashboard('cml3q4dps0001t4tikp6kt1ps');
 
   return (
     <DashboardLayout>
-      <TestProgressWidget results={sprintResults} />
+      {dashboard.widgets.map((widget) => (
+        <TestProgressWidget
+          key={widget.testType}
+          testType={widget.testType}
+          results={widget.results}
+        />
+      ))}
     </DashboardLayout>
   );
 }
