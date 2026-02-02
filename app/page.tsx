@@ -4,7 +4,8 @@ import { TestProgressWidget } from './components/widgets/TestProgressWidget';
 import { getChildDashboard } from '@/lib/queries/dashboard';
 
 export default async function Home() {
-  const dashboard = await getChildDashboard('cml3q4dps0001t4tikp6kt1ps');
+  // Hardcoded child ID for demo
+  const dashboard = await getChildDashboard('cml5o5mfr0001ggti9bmo9v1o');
 
   return (
     <DashboardLayout>
