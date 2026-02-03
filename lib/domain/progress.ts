@@ -1,50 +1,68 @@
-export type TestMeasurement = {
+import { TestDefinition } from './tests';
+
+export type Measurement = {
   value: number;
   testedAt: Date;
 };
 
-export function calculateStepProgress(results: TestMeasurement[]) {
-  if (results.length < 2) {
-    return null;
-  }
+export type ProgressTrend = 'improvement' | 'regression' | 'neutral';
 
-  const sorted = [...results].sort((a, b) => a.testedAt.getTime() - b.testedAt.getTime());
+export type ProgressResult = {
+  trend: 'improvement' | 'regression' | 'neutral';
+  percent: number;
+  from: number;
+  to: number;
+  sign: '+' | '-' | '';
+  label: string;
+};
 
-  const prev = sorted[sorted.length - 2];
-  const last = sorted[sorted.length - 1];
+export function calculateStepProgress(
+  measurements: Measurement[],
+  test: TestDefinition
+): ProgressResult | null {
+  if (measurements.length < 2) return null;
 
-  const absoluteChange = last.value - prev.value;
-  const percentChange = (absoluteChange / prev.value) * 100;
+  const prev = measurements[measurements.length - 2].value;
+  const last = measurements[measurements.length - 1].value;
 
-  return {
-    from: prev.value,
-    to: last.value,
-    absoluteChange,
-    percentChange,
-    fromDate: prev.testedAt,
-    toDate: last.testedAt,
-  };
+  return interpretProgress(prev, last, test);
 }
 
-export function calculateOverallProgress(results: TestMeasurement[]) {
-  if (results.length < 2) {
-    return null;
+export function calculateOverallProgress(
+  measurements: Measurement[],
+  test: TestDefinition
+): ProgressResult | null {
+  if (measurements.length < 2) return null;
+
+  const first = measurements[0].value;
+  const last = measurements[measurements.length - 1].value;
+
+  return interpretProgress(first, last, test);
+}
+
+function interpretProgress(from: number, to: number, test: TestDefinition): ProgressResult {
+  const rawChange = to - from;
+  const percent = Math.abs((rawChange / from) * 100);
+
+  let trend: ProgressResult['trend'] = 'neutral';
+
+  if (test.betterDirection === 'lower') {
+    if (rawChange < 0) trend = 'improvement';
+    else if (rawChange > 0) trend = 'regression';
+  } else {
+    if (rawChange > 0) trend = 'improvement';
+    else if (rawChange < 0) trend = 'regression';
   }
 
-  const sorted = [...results].sort((a, b) => a.testedAt.getTime() - b.testedAt.getTime());
-
-  const first = sorted[0];
-  const last = sorted[sorted.length - 1];
-
-  const absoluteChange = last.value - first.value;
-  const percentChange = (absoluteChange / first.value) * 100;
+  const sign = trend === 'improvement' ? '+' : trend === 'regression' ? '-' : '';
+  const label = trend === 'improvement' ? 'poprawa wyniku' : trend === 'regression' ? 'pogorszenie wyniku' : 'brak zmiany';
 
   return {
-    from: first.value,
-    to: last.value,
-    absoluteChange,
-    percentChange,
-    fromDate: first.testedAt,
-    toDate: last.testedAt,
+    trend,
+    percent,
+    from,
+    to,
+    sign,
+    label
   };
 }

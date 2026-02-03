@@ -15,7 +15,7 @@ type Props = {
 
 export function TestProgressWidget({ testType, results }: Props) {
   const test = getTestDefinition(testType);
-  const progress = calculateStepProgress(results);
+  const progress = calculateStepProgress(results, test);
 
   const chartData = results.map((r) => ({
     label: r.testedAt.toLocaleDateString('pl-PL', {
@@ -33,19 +33,16 @@ export function TestProgressWidget({ testType, results }: Props) {
     );
   }
 
-  const isImprovement =
-    test.betterDirection === 'lower' ? progress.absoluteChange < 0 : progress.absoluteChange > 0;
-
   return (
     <WidgetCard title={test.label}>
       <div className="space-y-4">
         <div className="flex items-end gap-6">
           <div>
             <div className="text-3xl font-semibold leading-none">
-              {isImprovement ? '+' : ''}
-              {Math.abs(progress.percentChange).toFixed(1)}%
+              {progress.sign}
+              {Math.abs(progress.percent).toFixed(1)}%
             </div>
-            <p className="text-xs text-muted-foreground">poprawa wyniku</p>
+            <p className="text-xs text-muted-foreground">{progress.label}</p>
           </div>
 
           <div className="border-l pl-6">
