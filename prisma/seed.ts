@@ -1,14 +1,18 @@
 import prisma from '@/lib/prisma';
 import { UserRole } from '@prisma/client';
+import bcrypt from 'bcryptjs';
 
 async function main() {
   await prisma.testResult.deleteMany();
   await prisma.child.deleteMany();
   await prisma.user.deleteMany();
 
+  const passwordHash = await bcrypt.hash('test1234', 10);
+
   const parent = await prisma.user.create({
     data: {
       email: 'parent@test.pl',
+      passwordHash: passwordHash,
       role: UserRole.PARENT,
       children: {
         create: [
