@@ -1,13 +1,12 @@
-import prisma from '../prisma';
+import prisma from '@/lib/prisma';
 
-export async function getChildrenWithResults() {
+export function getChildrenForUser(userId: string) {
   return prisma.child.findMany({
-    include: {
-      results: {
-        orderBy: {
-          testedAt: 'asc',
-        },
-      },
+    where: {
+      parentId: userId,
+    },
+    orderBy: {
+      name: 'asc',
     },
   });
 }
