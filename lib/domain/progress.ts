@@ -55,7 +55,12 @@ function interpretProgress(from: number, to: number, test: TestDefinition): Prog
   }
 
   const sign = trend === 'improvement' ? '+' : trend === 'regression' ? '-' : '';
-  const label = trend === 'improvement' ? 'poprawa wyniku' : trend === 'regression' ? 'pogorszenie wyniku' : 'brak zmiany';
+  const label =
+    trend === 'improvement'
+      ? 'poprawa wyniku'
+      : trend === 'regression'
+        ? 'pogorszenie wyniku'
+        : 'brak zmiany';
 
   return {
     trend,
@@ -63,6 +68,6 @@ function interpretProgress(from: number, to: number, test: TestDefinition): Prog
     from,
     to,
     sign,
-    label
+    label,
   };
 }
