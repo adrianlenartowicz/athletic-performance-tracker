@@ -17,9 +17,15 @@ type ChildDashboard = {
   widgets: DashboardWidgetData[];
 };
 
-export async function getChildDashboard(childId: string): Promise<ChildDashboard> {
-  const child = await prisma.child.findUnique({
-    where: { id: childId },
+export async function getChildDashboardForUser(
+  userId: string,
+  childId: string
+): Promise<ChildDashboard | null> {
+  const child = await prisma.child.findFirst({
+    where: {
+      id: childId,
+      parentId: userId,
+    },
     include: {
       results: {
         orderBy: { testedAt: 'asc' },
@@ -28,7 +34,7 @@ export async function getChildDashboard(childId: string): Promise<ChildDashboard
   });
 
   if (!child) {
-    throw new Error('Child not found');
+    return null;
   }
 
   const resultsByTest = new Map<TestType, DashboardWidgetData['results']>();

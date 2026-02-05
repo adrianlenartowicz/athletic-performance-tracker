@@ -1,6 +1,7 @@
 import { redirect } from 'next/navigation';
 import { auth } from '@/lib/auth';
 import { getChildrenForUser } from '@/lib/queries/children';
+import Link from 'next/link';
 
 export default async function ChildrenPage() {
   const session = await auth();
@@ -17,7 +18,13 @@ export default async function ChildrenPage() {
 
       <ul className="space-y-2">
         {children.map((child) => (
-          <li key={child.id}>{child.name}</li>
+          <Link
+            key={child.id}
+            href={`/children/${child.id}/dashboard`}
+            className="block p-4 rounded border hover:bg-muted"
+          >
+            {child.name}
+          </Link>
         ))}
       </ul>
     </div>
