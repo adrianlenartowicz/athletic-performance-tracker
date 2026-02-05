@@ -3,6 +3,7 @@ import { auth } from '@/lib/auth';
 import { getChildDashboardForUser } from '@/lib/queries/dashboard';
 import { DashboardLayout } from '@/app/components/dashboard/dashboard';
 import { TestProgressWidget } from '@/app/components/widgets/TestProgressWidget';
+import Link from 'next/link';
 
 type Props = {
   params: Promise<{
@@ -26,7 +27,16 @@ export default async function ChildDashboardPage({ params }: Props) {
   }
 
   return (
-    <DashboardLayout>
+    <DashboardLayout
+      headerSlot={
+        <Link
+          href="/children"
+          className="text-sm text-muted-foreground hover:underline"
+        >
+          ← Wróć do listy dzieci
+        </Link>
+      }
+    >
       {dashboard.widgets.map((widget) => (
         <TestProgressWidget
           key={widget.testType}
