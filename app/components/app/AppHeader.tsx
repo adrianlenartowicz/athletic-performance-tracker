@@ -1,16 +1,20 @@
 import { auth } from '@/lib/auth';
 import LogoutButton from '@/app/components/app/LogoutButton';
 
-export default async function Header() {
+export default async function AppHeader() {
   const session = await auth();
 
   if (!session?.user) return null;
 
   return (
-    <header className="flex items-center justify-between border-b bg-background px-6 py-4">
-      <div className="text-sm text-muted-foreground">Zalogowany jako {session.user.email}</div>
+    <header className="border-b bg-background">
+      <div className="mx-auto flex h-14 max-w-7xl items-center justify-between px-6">
+        <div className="text-sm font-medium">
+          Panel rodzica
+        </div>
 
-      <LogoutButton />
+        <LogoutButton />
+      </div>
     </header>
   );
 }
