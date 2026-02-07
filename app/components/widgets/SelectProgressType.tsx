@@ -9,19 +9,22 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { ProgressMode } from '@/lib/domain/progress';
 
-export function SelectProgressType() {
+type Props = {
+  value: ProgressMode;
+  onChange: (value: ProgressMode) => void;
+};
+
+export function SelectProgressType({ value, onChange }: Props) {
   return (
-    <Select>
-      <SelectTrigger className="w-full max-w-48">
-        <SelectValue placeholder="Rodzaj postępu" />
+    <Select value={value} onValueChange={onChange}>
+      <SelectTrigger className="w-48">
+        <SelectValue />
       </SelectTrigger>
       <SelectContent>
-        <SelectGroup>
-          <SelectLabel>Postęp</SelectLabel>
-          <SelectItem value="step_progress">Od ostatniego pomiaru</SelectItem>
-          <SelectItem value="overall_progress">Od początku pomiarów</SelectItem>
-        </SelectGroup>
+        <SelectItem value="step">Od ostatniego pomiaru</SelectItem>
+        <SelectItem value="overall">Od początku</SelectItem>
       </SelectContent>
     </Select>
   );

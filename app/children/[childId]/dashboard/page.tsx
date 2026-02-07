@@ -2,7 +2,7 @@ import { redirect } from 'next/navigation';
 import { auth } from '@/lib/auth';
 import { getChildDashboardForUser } from '@/lib/queries/dashboard';
 import { DashboardLayout } from '@/app/components/dashboard/dashboard';
-import { TestProgressWidget } from '@/app/components/widgets/TestProgressWidget';
+import { TestProgressWidgetServer } from '@/app/components/widgets/TestProgressWidget.server';
 import Link from 'next/link';
 
 type Props = {
@@ -39,7 +39,7 @@ export default async function ChildDashboardPage({ params }: Props) {
       </div>
 
       {dashboard.widgets.map((widget) => (
-        <TestProgressWidget
+        <TestProgressWidgetServer
           key={widget.testType}
           testType={widget.testType}
           results={widget.results}

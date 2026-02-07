@@ -16,6 +16,8 @@ export type ProgressResult = {
   label: string;
 };
 
+export type ProgressMode = 'step' | 'overall';
+
 export function calculateStepProgress(
   measurements: Measurement[],
   test: TestDefinition
