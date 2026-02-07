@@ -1,8 +1,8 @@
 'use client';
 
 import { CartesianGrid, Line, LineChart, XAxis } from 'recharts';
-
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { SelectProgressType } from './SelectProgressType';
 
 import {
   ChartContainer,
@@ -31,8 +31,9 @@ export function ProgressChart({ data, title = 'Postępy w czasie' }: Props) {
 
   return (
     <Card>
-      <CardHeader className="pb-2">
+      <CardHeader className="pb-2 flex justify-between items-center">
         <CardTitle className="text-sm font-medium">{title}</CardTitle>
+        <SelectProgressType />
       </CardHeader>
 
       <CardContent>

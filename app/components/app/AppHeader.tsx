@@ -9,9 +9,7 @@ export default async function AppHeader() {
   return (
     <header className="border-b bg-background">
       <div className="mx-auto flex h-14 max-w-7xl items-center justify-between px-6">
-        <div className="text-sm font-medium">
-          Panel rodzica
-        </div>
+        <div className="text-sm font-medium">Panel rodzica</div>
 
         <LogoutButton />
       </div>
