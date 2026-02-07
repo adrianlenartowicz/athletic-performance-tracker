@@ -19,7 +19,7 @@ export default function LoginPage() {
       password,
       redirect: false,
     });
-    
+
     setLoading(false);
 
     if (!res || res.error) {
@@ -38,9 +38,7 @@ export default function LoginPage() {
       >
         <div>
           <h1 className="text-xl font-semibold">Zaloguj się</h1>
-          <p className="text-sm text-muted-foreground">
-            Panel rodzica / trenera
-          </p>
+          <p className="text-sm text-muted-foreground">Panel rodzica / trenera</p>
         </div>
 
         <div className="space-y-2">
@@ -65,9 +63,7 @@ export default function LoginPage() {
           />
         </div>
 
-        {error && (
-          <p className="text-sm text-destructive">{error}</p>
-        )}
+        {error && <p className="text-sm text-destructive">{error}</p>}
 
         <button
           type="submit"

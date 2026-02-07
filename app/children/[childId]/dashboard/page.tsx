@@ -27,16 +27,17 @@ export default async function ChildDashboardPage({ params }: Props) {
   }
 
   return (
-    <DashboardLayout
-      headerSlot={
-        <Link
-          href="/children"
-          className="text-sm text-muted-foreground hover:underline"
-        >
+    <DashboardLayout>
+      <div className="md:col-span-2 space-y-2">
+        <Link href="/children" className="text-sm text-muted-foreground hover:underline">
           ← Wróć do listy dzieci
         </Link>
-      }
-    >
+
+        <h1 className="text-2xl font-semibold tracking-tight">Postępy dziecka</h1>
+
+        <p className="text-sm text-muted-foreground">Podsumowanie wyników i rozwoju sprawności</p>
+      </div>
+
       {dashboard.widgets.map((widget) => (
         <TestProgressWidget
           key={widget.testType}
