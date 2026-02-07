@@ -4,8 +4,7 @@ import { useState } from 'react';
 import { WidgetCard } from './WidgetCard';
 import { ProgressChart } from './ProgressChart';
 import { SelectProgressType } from './SelectProgressType';
-import { ProgressMode } from '@/lib/domain/progress';
-import { ProgressResult } from '@/lib/domain/progress';
+import { ProgressMode, ProgressResult } from '@/lib/domain/progress';
 
 type Props = {
   test: {
@@ -38,22 +37,24 @@ export function TestProgressWidgetClient({
   return (
     <WidgetCard title={test.label}>
       <div className="space-y-4">
-        <div className="flex justify-between items-center">
-          <div className="flex items-center space-x-6">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-6">
             <div>
-              <div className="text-3xl font-semibold">
+              <div className="text-3xl font-semibold leading-none">
                 {progress.sign}
                 {Math.abs(progress.percent).toFixed(1)}%
               </div>
               <p className="text-xs text-muted-foreground">{progress.label}</p>
             </div>
 
-            <div className="border-l pl-6 text-sm font-medium">
+            <div className="text-sm font-medium sm:border-l sm:pl-6">
               {progress.from.toFixed(1)} {test.unit} → {progress.to.toFixed(1)} {test.unit}
             </div>
           </div>
 
-          <SelectProgressType value={mode} onChange={setMode} />
+          <div className="w-full sm:w-auto sm:min-w-[180px]">
+            <SelectProgressType value={mode} onChange={setMode} />
+          </div>
         </div>
 
         <ProgressChart data={chartData} />
