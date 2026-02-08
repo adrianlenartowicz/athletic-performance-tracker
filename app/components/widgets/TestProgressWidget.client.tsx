@@ -16,6 +16,7 @@ type Props = {
   chartData: { label: string; value: number }[];
   step: number;
   unit: string;
+  betterDirection?: 'lower' | 'higher';
 };
 
 export function TestProgressWidgetClient({
@@ -25,6 +26,7 @@ export function TestProgressWidgetClient({
   chartData,
   step,
   unit,
+  betterDirection,
 }: Props) {
   const [mode, setMode] = useState<ProgressMode>('step');
   const progress = mode === 'step' ? stepProgress : overallProgress;
@@ -50,8 +52,11 @@ export function TestProgressWidgetClient({
               <p className="text-xs text-muted-foreground">{progress.label}</p>
             </div>
 
-            <div className="text-sm font-medium sm:border-l sm:pl-6">
+            <div className="text-sm font-medium sm:border-l sm:pl-6 flex flex-col">
               {progress.from.toFixed(1)} {test.unit} → {progress.to.toFixed(1)} {test.unit}
+              <span className="text-muted-foreground text-xs">
+                {betterDirection === 'lower' ? 'mniej = lepiej' : 'więcej = lepiej'}
+              </span>
             </div>
           </div>
 
@@ -60,7 +65,7 @@ export function TestProgressWidgetClient({
           </div>
         </div>
 
-        <ProgressChart data={chartData} step={step} unit={unit} />
+        <ProgressChart data={chartData} step={step} unit={unit} betterDirection={betterDirection} />
       </div>
     </WidgetCard>
   );

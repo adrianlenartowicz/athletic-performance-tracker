@@ -18,6 +18,7 @@ type Props = {
   data: ChartPoint[];
   step: number;
   unit: string;
+  betterDirection?: 'lower' | 'higher';
   title?: string;
 };
 
@@ -33,7 +34,13 @@ function ticksToDisplay(min: number, max: number, step: number) {
   return ticks;
 }
 
-export function ProgressChart({ data, step, unit, title = 'Postępy w czasie' }: Props) {
+export function ProgressChart({
+  data,
+  step,
+  unit,
+  betterDirection,
+  title = 'Postępy w czasie',
+}: Props) {
   const chartConfig = {
     value: {
       label: 'Wynik',
@@ -67,6 +74,7 @@ export function ProgressChart({ data, step, unit, title = 'Postępy w czasie' }:
             />
 
             <YAxis
+              reversed={betterDirection === 'lower'}
               ticks={ticks}
               domain={[ticks[0], ticks[ticks.length - 1]]}
               axisLine={false}
