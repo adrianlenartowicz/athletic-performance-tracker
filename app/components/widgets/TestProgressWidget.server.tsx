@@ -33,6 +33,7 @@ export function TestProgressWidgetServer({ testType, results }: Props) {
       overallProgress={overallProgress}
       chartData={chartData}
       step={test.step}
+      unit={test.unit}
     />
   );
 }

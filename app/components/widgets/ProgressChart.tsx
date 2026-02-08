@@ -17,11 +17,12 @@ type ChartPoint = {
 type Props = {
   data: ChartPoint[];
   step: number;
+  unit: string;
   title?: string;
 };
 
 function ticksToDisplay(min: number, max: number, step: number) {
-  const ticks = [];
+  const ticks: number[] = [];
   const baseFirstTick = Math.floor(min / step) * step;
   const firstTick = baseFirstTick === min ? baseFirstTick - step : baseFirstTick;
 
@@ -32,7 +33,7 @@ function ticksToDisplay(min: number, max: number, step: number) {
   return ticks;
 }
 
-export function ProgressChart({ data, step, title = 'Postępy w czasie' }: Props) {
+export function ProgressChart({ data, step, unit, title = 'Postępy w czasie' }: Props) {
   const chartConfig = {
     value: {
       label: 'Wynik',
@@ -54,7 +55,7 @@ export function ProgressChart({ data, step, title = 'Postępy w czasie' }: Props
 
       <CardContent>
         <ChartContainer config={chartConfig}>
-          <LineChart data={data} margin={{ top: 20, bottom: 20, left: 28, right: 12 }}>
+          <LineChart data={data} margin={{ top: 20, bottom: 20, left: 10, right: 20 }}>
             <CartesianGrid vertical={false} strokeDasharray="3 3" />
 
             <XAxis
@@ -70,14 +71,21 @@ export function ProgressChart({ data, step, title = 'Postępy w czasie' }: Props
               domain={[ticks[0], ticks[ticks.length - 1]]}
               axisLine={false}
               tickLine={false}
-              width={36}
+              tickMargin={14}
+              width={44}
               tick={{
                 fontSize: 11,
                 fill: 'hsl(var(--muted-foreground))',
               }}
+              tickFormatter={(value) => `${value}\u00A0${unit}`}
             />
 
-            <ChartTooltip cursor={false} content={<ChartTooltipContent hideLabel />} />
+            <ChartTooltip
+              cursor={false}
+              content={
+                <ChartTooltipContent formatter={(value) => ['Wynik: ', `${value}\u00A0${unit}`]} />
+              }
+            />
 
             <Line
               dataKey="value"
