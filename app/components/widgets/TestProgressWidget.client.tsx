@@ -14,6 +14,7 @@ type Props = {
   stepProgress: ProgressResult | null;
   overallProgress: ProgressResult | null;
   chartData: { label: string; value: number }[];
+  step: number;
 };
 
 export function TestProgressWidgetClient({
@@ -21,9 +22,9 @@ export function TestProgressWidgetClient({
   stepProgress,
   overallProgress,
   chartData,
+  step,
 }: Props) {
   const [mode, setMode] = useState<ProgressMode>('step');
-
   const progress = mode === 'step' ? stepProgress : overallProgress;
 
   if (!progress) {
@@ -57,7 +58,7 @@ export function TestProgressWidgetClient({
           </div>
         </div>
 
-        <ProgressChart data={chartData} />
+        <ProgressChart data={chartData} step={step} />
       </div>
     </WidgetCard>
   );

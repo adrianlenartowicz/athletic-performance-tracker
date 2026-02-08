@@ -5,6 +5,7 @@ export type TestDefinition = {
   label: string;
   unit: 's' | 'cm';
   betterDirection: 'lower' | 'higher';
+  step: number;
 };
 
 export const TEST_DEFINITIONS: Record<TestType, TestDefinition> = {
@@ -13,6 +14,7 @@ export const TEST_DEFINITIONS: Record<TestType, TestDefinition> = {
     label: 'Sprint 20 m',
     unit: 's',
     betterDirection: 'lower',
+    step: 0.5,
   },
 
   broad_jump: {
@@ -20,6 +22,7 @@ export const TEST_DEFINITIONS: Record<TestType, TestDefinition> = {
     label: 'Skok w dal',
     unit: 'cm',
     betterDirection: 'higher',
+    step: 10,
   },
 
   vertical_jump: {
@@ -27,6 +30,7 @@ export const TEST_DEFINITIONS: Record<TestType, TestDefinition> = {
     label: 'Skok wzwyż',
     unit: 'cm',
     betterDirection: 'higher',
+    step: 10,
   },
 };
 

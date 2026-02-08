@@ -1,9 +1,7 @@
 'use client';
 
-import { CartesianGrid, Line, LineChart, XAxis } from 'recharts';
+import { CartesianGrid, Line, LineChart, XAxis, YAxis } from 'recharts';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { YAxis } from 'recharts';
-
 import {
   ChartContainer,
   ChartTooltip,
@@ -18,10 +16,23 @@ type ChartPoint = {
 
 type Props = {
   data: ChartPoint[];
+  step: number;
   title?: string;
 };
 
-export function ProgressChart({ data, title = 'Postępy w czasie' }: Props) {
+function ticksToDisplay(min: number, max: number, step: number) {
+  const ticks = [];
+  const baseFirstTick = Math.floor(min / step) * step;
+  const firstTick = baseFirstTick === min ? baseFirstTick - step : baseFirstTick;
+
+  for (let value = firstTick; value <= max + step; value += step) {
+    ticks.push(value);
+  }
+
+  return ticks;
+}
+
+export function ProgressChart({ data, step, title = 'Postępy w czasie' }: Props) {
   const chartConfig = {
     value: {
       label: 'Wynik',
@@ -32,9 +43,8 @@ export function ProgressChart({ data, title = 'Postępy w czasie' }: Props) {
   const values = data.map((d) => d.value);
   const min = Math.min(...values);
   const max = Math.max(...values);
-  const range = max - min;
 
-  const padding = range === 0 ? Math.abs(min) * 0.1 || 1 : range * 0.15;
+  const ticks = ticksToDisplay(min, max, step);
 
   return (
     <Card>
@@ -44,16 +54,9 @@ export function ProgressChart({ data, title = 'Postępy w czasie' }: Props) {
 
       <CardContent>
         <ChartContainer config={chartConfig}>
-          <LineChart
-            data={data}
-            margin={{
-              top: 20,
-              bottom: 20,
-              left: 12,
-              right: 12,
-            }}
-          >
+          <LineChart data={data} margin={{ top: 20, bottom: 20, left: 28, right: 12 }}>
             <CartesianGrid vertical={false} strokeDasharray="3 3" />
+
             <XAxis
               dataKey="label"
               padding={{ left: 16, right: 16 }}
@@ -61,8 +64,21 @@ export function ProgressChart({ data, title = 'Postępy w czasie' }: Props) {
               axisLine={false}
               tickMargin={18}
             />
-            <YAxis hide domain={[min - padding, max + padding]} />
+
+            <YAxis
+              ticks={ticks}
+              domain={[ticks[0], ticks[ticks.length - 1]]}
+              axisLine={false}
+              tickLine={false}
+              width={36}
+              tick={{
+                fontSize: 11,
+                fill: 'hsl(var(--muted-foreground))',
+              }}
+            />
+
             <ChartTooltip cursor={false} content={<ChartTooltipContent hideLabel />} />
+
             <Line
               dataKey="value"
               type="linear"

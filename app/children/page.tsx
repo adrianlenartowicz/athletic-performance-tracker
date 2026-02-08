@@ -16,7 +16,7 @@ export default async function ChildrenPage() {
     <main className="min-h-screen bg-muted/40 p-6">
       <div className="mx-auto max-w-4xl space-y-8">
         <header className="space-y-2 text-center">
-          <h1 className="text-2xl font-semibold">Twoje dzieci</h1>
+          <h1 className="text-2xl font-semibold">Lista dzieci</h1>
           <p className="text-sm text-muted-foreground">
             Wybierz dziecko, aby zobaczyć jego postępy
           </p>
