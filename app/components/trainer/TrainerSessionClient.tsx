@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { TestDefinition } from '@/lib/domain/tests';
+import { saveTestResult } from '@/app/trainer/test-session/session/actions';
 
 type Child = {
   id: string;
@@ -44,7 +45,7 @@ export default function TrainerSessionClient({ test, children }: Props) {
     return test.betterDirection === 'lower' ? Math.min(...values) : Math.max(...values);
   }
 
-  function saveAttempt(action: 'next-child' | 'second-attempt') {
+  async function saveAttempt(action: 'next-child' | 'second-attempt') {
     if (value === null) return;
 
     const updatedAttempts = [...attempts, value];
@@ -59,8 +60,12 @@ export default function TrainerSessionClient({ test, children }: Props) {
     if (updatedAttempts.length === 2) {
       const best = bestOf(updatedAttempts);
 
-      // TODO: server action
-      // await saveTestResult({ childId: child.id, testType: test.type, value: best })
+      await saveTestResult({
+        childId: child.id,
+        testType: test.type,
+        value: best,
+        unit: test.unit,
+      });
 
       const { [child.id]: _, ...rest } = nextMap;
       setAttemptsMap(rest);

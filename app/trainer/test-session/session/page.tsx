@@ -3,6 +3,7 @@ import { redirect } from 'next/navigation';
 import { getChildrenByIds } from '@/lib/queries/children';
 import { TEST_DEFINITIONS } from '@/lib//domain/tests';
 import TrainerSessionClient from '@/app/components/trainer/TrainerSessionClient';
+
 type Props = {
   searchParams: {
     test?: string;

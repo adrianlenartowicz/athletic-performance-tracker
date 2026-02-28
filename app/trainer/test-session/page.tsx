@@ -35,9 +35,9 @@ export default async function TrainerTestSessionPage() {
             <SelectValue placeholder="Wybierz test" />
           </SelectTrigger>
           <SelectContent>
-            {Object.entries(TEST_DEFINITIONS).map(([key, t]) => (
+            {Object.entries(TEST_DEFINITIONS).map(([key, test]) => (
               <SelectItem key={key} value={key}>
-                {t.label}
+                {test.label}
               </SelectItem>
             ))}
           </SelectContent>
