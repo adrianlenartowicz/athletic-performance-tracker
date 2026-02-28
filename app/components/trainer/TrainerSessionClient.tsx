@@ -1,12 +1,27 @@
-'use client';
+﻿'use client';
 
 import { useEffect, useRef, useState } from 'react';
 import { TestDefinition } from '@/lib/domain/tests';
 import { saveTestResult } from '@/app/trainer/test-session/session/actions';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
 
 type Child = {
   id: string;
   name: string;
+};
+
+type SavedResult = {
+  id: string;
+  name: string;
+  value: number;
+  unit: string;
 };
 
 type Props = {
@@ -16,9 +31,11 @@ type Props = {
 
 export default function TrainerSessionClient({ test, children }: Props) {
   const [queue, setQueue] = useState(children);
-  const [attemptsMap, setAttemptsMap] = useState<Record<string, number[]>>({});
+  const [allAttemptsMap, setAllAttemptsMap] = useState<Record<string, number[]>>({});
   const [value, setValue] = useState<number | null>(null);
   const [justSaved, setJustSaved] = useState(false);
+  const [sessionResults, setSessionResults] = useState<SavedResult[]>([]);
+  const [isSaving, setIsSaving] = useState(false);
 
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -31,50 +48,101 @@ export default function TrainerSessionClient({ test, children }: Props) {
 
   if (!child) {
     return (
-      <div className="p-6 text-center space-y-2">
-        <div className="text-xl font-semibold">Sesja zakończona</div>
-        <div className="text-muted-foreground">Wszystkie wyniki zapisane</div>
+      <div className="p-6 space-y-6">
+        <div className="text-center space-y-2">
+          <div className="text-xl font-semibold">Sesja zakończona</div>
+          <div className="text-muted-foreground">Wszystkie wyniki zapisane</div>
+        </div>
+
+        <div className="rounded-xl border">
+          <div className="px-4 py-3 border-b font-medium">Wyniki z tej sesji</div>
+          {sessionResults.length === 0 ? (
+            <div className="px-4 py-6 text-sm text-muted-foreground">
+              Brak zapisanych wyników w tej sesji.
+            </div>
+          ) : (
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Dziecko</TableHead>
+                  <TableHead>Wynik</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {sessionResults.map((result) => (
+                  <TableRow key={result.id}>
+                    <TableCell className="font-medium">{result.name}</TableCell>
+                    <TableCell>
+                      {result.value} {result.unit}
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          )}
+        </div>
       </div>
     );
   }
 
-  const attempts = attemptsMap[child.id] ?? [];
-  const attemptNumber = attempts.length + 1;
+  const childAttempts = allAttemptsMap[child.id] ?? [];
+  const attemptNumber = childAttempts.length + 1;
 
   function bestOf(values: number[]) {
     return test.betterDirection === 'lower' ? Math.min(...values) : Math.max(...values);
   }
 
-  async function saveAttempt(action: 'next-child' | 'second-attempt') {
-    if (value === null) return;
+  function removeFinishedChild(childId: string) {
+    setAllAttemptsMap((prevAttempts) => {
+      const { [childId]: _, ...rest } = prevAttempts;
+      return rest;
+    });
+    setQueue((prevQueue) => prevQueue.slice(1));
+  }
 
-    const updatedAttempts = [...attempts, value];
-    const nextMap = {
-      ...attemptsMap,
-      [child.id]: updatedAttempts,
+  async function saveAttempt(action: 'next-child' | 'second-attempt') {
+    if (value === null || isSaving) return;
+
+    const childUpdatedAttempts = [...childAttempts, value];
+    const newAllAttemptsMap = {
+      ...allAttemptsMap,
+      [child.id]: childUpdatedAttempts,
     };
 
     setJustSaved(true);
     setTimeout(() => setJustSaved(false), 800);
 
-    if (updatedAttempts.length === 2) {
-      const best = bestOf(updatedAttempts);
+    if (childUpdatedAttempts.length === 2) {
+      const best = bestOf(childUpdatedAttempts);
 
-      await saveTestResult({
-        childId: child.id,
-        testType: test.type,
-        value: best,
-        unit: test.unit,
-      });
+      setIsSaving(true);
+      try {
+        await saveTestResult({
+          childId: child.id,
+          testType: test.type,
+          value: best,
+          unit: test.unit,
+        });
+      } finally {
+        setIsSaving(false);
+      }
 
-      const { [child.id]: _, ...rest } = nextMap;
-      setAttemptsMap(rest);
-      setQueue((q) => q.slice(1));
+      setSessionResults((prev) => [
+        ...prev,
+        {
+          id: child.id,
+          name: child.name,
+          value: best,
+          unit: test.unit,
+        },
+      ]);
+
+      removeFinishedChild(child.id);
       setValue(null);
       return;
     }
 
-    setAttemptsMap(nextMap);
+    setAllAttemptsMap(newAllAttemptsMap);
     setValue(null);
 
     if (action === 'next-child') {
@@ -103,24 +171,25 @@ export default function TrainerSessionClient({ test, children }: Props) {
           placeholder={`(${test.unit})`}
           className="w-full rounded-lg border px-4 py-4 text-2xl text-center"
           value={value ?? ''}
+          disabled={isSaving}
           onChange={(e) => setValue(e.target.value === '' ? null : Number(e.target.value))}
         />
 
-        {attempts.length === 1 && (
+        {childAttempts.length === 1 && (
           <div className="text-center text-sm text-muted-foreground">
-            Próba 1: {attempts[0]} {test.unit}
+            Próba 1: {childAttempts[0]} {test.unit}
           </div>
         )}
 
         {justSaved && <div className="text-center text-sm text-green-600">✓ Zapisano</div>}
 
         <div className="space-y-2">
-          {attempts.length === 0 && (
+          {childAttempts.length === 0 && (
             <>
               <button
                 type="button"
                 onClick={() => saveAttempt('next-child')}
-                disabled={value === null}
+                disabled={value === null || isSaving}
                 className="w-full rounded-lg bg-primary py-3 text-primary-foreground disabled:opacity-40"
               >
                 Zapisz i następne dziecko
@@ -129,7 +198,7 @@ export default function TrainerSessionClient({ test, children }: Props) {
               <button
                 type="button"
                 onClick={() => saveAttempt('second-attempt')}
-                disabled={value === null}
+                disabled={value === null || isSaving}
                 className="w-full rounded-lg border py-3 disabled:opacity-40"
               >
                 Zapisz i druga próba
@@ -137,11 +206,11 @@ export default function TrainerSessionClient({ test, children }: Props) {
             </>
           )}
 
-          {attempts.length === 1 && (
+          {childAttempts.length === 1 && (
             <button
               type="button"
               onClick={() => saveAttempt('next-child')}
-              disabled={value === null}
+              disabled={value === null || isSaving}
               className="w-full rounded-lg bg-primary py-3 text-primary-foreground disabled:opacity-40"
             >
               Zapisz i zakończ dla dziecka
