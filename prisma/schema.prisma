@@ -12,14 +12,39 @@ model User {
   passwordHash    String
   role     UserRole
   children Child[]
+  trainerGroups TrainerGroup[]
 
   createdAt DateTime @default(now())
+}
+
+model Group {
+  id        String   @id @default(cuid())
+  name      String
+  location  String?
+
+  children  Child[]
+  trainers  TrainerGroup[]
+
+  createdAt DateTime @default(now())
+}
+
+model TrainerGroup {
+  trainerId String
+  groupId   String
+  trainer   User  @relation(fields: [trainerId], references: [id])
+  group     Group @relation(fields: [groupId], references: [id])
+
+  assignedAt DateTime @default(now())
+
+  @@id([trainerId, groupId])
 }
 
 model Child {
   id        String   @id @default(cuid())
   name      String
   birthYear Int
+  groupId   String
+  group     Group   @relation(fields: [groupId], references: [id])
 
   parentId String
   parent   User   @relation(fields: [parentId], references: [id])

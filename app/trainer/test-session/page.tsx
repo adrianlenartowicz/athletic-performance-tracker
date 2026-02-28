@@ -18,7 +18,7 @@ export default async function TrainerTestSessionPage() {
   const session = await auth();
   if (!session || session.user.role !== 'TRAINER') redirect('/');
 
-  const children = await getAllChildrenForTrainer();
+  const children = await getAllChildrenForTrainer(session.user.id);
 
   return (
     <form action={startTestSession} className="mx-auto max-w-5xl space-y-8 p-4">

@@ -27,7 +27,11 @@ export default async function TrainerSessionPage({ searchParams }: Props) {
 
   if (childIds.length === 0) redirect('/trainer/test-session');
 
-  const children = await getChildrenByIds(childIds);
+  const children = await getChildrenByIds(childIds, session.user.id);
+
+  if (children.length === 0) {
+    redirect('/trainer/test-session');
+  }
 
   return (
     <TrainerSessionClient

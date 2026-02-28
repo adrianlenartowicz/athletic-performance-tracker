@@ -9,6 +9,20 @@ async function main() {
 
   const passwordHash = await bcrypt.hash('test1234', 10);
 
+  const youngerGroup = await prisma.group.create({
+    data: {
+      name: 'Mlodsza',
+      location: 'Wroclaw',
+    },
+  });
+
+  const olderGroup = await prisma.group.create({
+    data: {
+      name: 'Starsza',
+      location: 'Wroclaw',
+    },
+  });
+
   // ======================
   // TRAINER
   // ======================
@@ -17,6 +31,9 @@ async function main() {
       email: 'trainer@test.pl',
       passwordHash,
       role: UserRole.TRAINER,
+      trainerGroups: {
+        create: [{ groupId: youngerGroup.id }, { groupId: olderGroup.id }],
+      },
     },
   });
 
@@ -33,6 +50,7 @@ async function main() {
           {
             name: 'Jan',
             birthYear: 2014,
+            groupId: olderGroup.id,
             results: {
               create: [
                 // Sprint 20m (lower = better)
@@ -79,6 +97,7 @@ async function main() {
           {
             name: 'Zosia',
             birthYear: 2016,
+            groupId: youngerGroup.id,
             results: {
               create: [
                 { testType: 'sprint_20m', value: 4.9, unit: 's', testedAt: new Date('2024-02-01') },
@@ -117,6 +136,7 @@ async function main() {
           {
             name: 'Kuba',
             birthYear: 2013,
+            groupId: olderGroup.id,
             results: {
               create: [
                 { testType: 'sprint_20m', value: 3.9, unit: 's', testedAt: new Date('2024-01-15') },
@@ -140,6 +160,7 @@ async function main() {
           {
             name: 'Maja',
             birthYear: 2015,
+            groupId: olderGroup.id,
             results: {
               create: [
                 { testType: 'sprint_20m', value: 4.6, unit: 's', testedAt: new Date('2024-02-20') },
@@ -163,6 +184,7 @@ async function main() {
           {
             name: 'Antek',
             birthYear: 2017,
+            groupId: youngerGroup.id,
             results: {
               create: [
                 { testType: 'sprint_20m', value: 5.1, unit: 's', testedAt: new Date('2024-03-01') },

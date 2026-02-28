@@ -19,6 +19,23 @@ export async function saveTestResult(input: SaveResultInput) {
     redirect('/');
   }
 
+  const child = await prisma.child.findFirst({
+    where: {
+      id: input.childId,
+      group: {
+        trainers: {
+          some: {
+            trainerId: session.user.id,
+          },
+        },
+      },
+    },
+  });
+
+  if (!child) {
+    redirect('/trainer/test-session');
+  }
+
   await prisma.testResult.create({
     data: {
       childId: input.childId,

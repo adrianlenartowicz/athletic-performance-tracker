@@ -11,8 +11,17 @@ export function getChildrenForUser(userId: string) {
   });
 }
 
-export async function getAllChildrenForTrainer() {
+export async function getAllChildrenForTrainer(trainerId: string) {
   return prisma.child.findMany({
+    where: {
+      group: {
+        trainers: {
+          some: {
+            trainerId,
+          },
+        },
+      },
+    },
     orderBy: { name: 'asc' },
     select: {
       id: true,
@@ -22,12 +31,19 @@ export async function getAllChildrenForTrainer() {
   });
 }
 
-export async function getChildrenByIds(childIds: string[]) {
+export async function getChildrenByIds(childIds: string[], trainerId: string) {
   if (childIds.length === 0) return [];
 
   return prisma.child.findMany({
     where: {
       id: { in: childIds },
+      group: {
+        trainers: {
+          some: {
+            trainerId,
+          },
+        },
+      },
     },
     orderBy: { name: 'asc' },
   });

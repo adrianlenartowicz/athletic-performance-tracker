@@ -2,6 +2,7 @@
 
 import { auth } from '@/lib/auth';
 import { redirect } from 'next/navigation';
+import { getChildrenByIds } from '@/lib/queries/children';
 
 export async function startTestSession(formData: FormData) {
   const session = await auth();
@@ -14,9 +15,14 @@ export async function startTestSession(formData: FormData) {
     redirect('/trainer/test-session');
   }
 
+  const allowedChildren = await getChildrenByIds(childIds, session.user.id);
+  if (allowedChildren.length === 0) {
+    redirect('/trainer/test-session');
+  }
+
   const params = new URLSearchParams();
   params.set('test', testType);
-  childIds.forEach((id) => params.append('child', id));
+  allowedChildren.forEach((child) => params.append('child', child.id));
 
   redirect(`/trainer/test-session/session?${params.toString()}`);
 }
