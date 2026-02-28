@@ -1,23 +1,34 @@
 'use client';
 
 import { signIn } from 'next-auth/react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useState } from 'react';
 
 export default function LoginPage() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+
+  function getSafeRedirect(url: string | null) {
+    if (!url) return '/';
+    if (url.startsWith('/') && !url.startsWith('//')) return url;
+    return '/';
+  }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setLoading(true);
     setError(null);
 
+    const callbackUrl = getSafeRedirect(searchParams.get('callbackUrl'));
     const res = await signIn('credentials', {
       email,
       password,
       redirect: false,
+      callbackUrl,
     });
 
     setLoading(false);
@@ -27,7 +38,8 @@ export default function LoginPage() {
       return;
     }
 
-    window.location.href = '/children';
+    const nextUrl = res?.url ? getSafeRedirect(res.url) : callbackUrl;
+    router.push(nextUrl);
   }
 
   return (

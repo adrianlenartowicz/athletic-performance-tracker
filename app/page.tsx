@@ -12,5 +12,9 @@ export default async function Home() {
     redirect('/trainer');
   }
 
-  redirect('/children');
+  if (session.user.role === 'PARENT') {
+    redirect('/children');
+  }
+
+  redirect('/login');
 }
