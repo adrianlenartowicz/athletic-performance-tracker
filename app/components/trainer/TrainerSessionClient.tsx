@@ -1,8 +1,10 @@
 ﻿'use client';
 
 import { useEffect, useRef, useState } from 'react';
+import Link from 'next/link';
 import { TestDefinition } from '@/lib/domain/tests';
 import { saveTestResult } from '@/app/trainer/test-session/session/actions';
+import { Button } from '@/components/ui/button';
 import {
   Table,
   TableBody,
@@ -80,6 +82,12 @@ export default function TrainerSessionClient({ test, children }: Props) {
               </TableBody>
             </Table>
           )}
+        </div>
+
+        <div className="flex justify-center">
+          <Button asChild size="lg">
+            <Link href="/trainer/test-session">Nowa sesja</Link>
+          </Button>
         </div>
       </div>
     );
