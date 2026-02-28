@@ -17,6 +17,7 @@ export async function getAllChildrenForTrainer() {
     select: {
       id: true,
       name: true,
+      birthYear: true,
     },
   });
 }

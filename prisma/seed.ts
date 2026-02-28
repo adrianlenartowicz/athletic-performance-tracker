@@ -32,7 +32,7 @@ async function main() {
         create: [
           {
             name: 'Jan',
-            birthDate: new Date('2014-05-10'),
+            birthYear: 2014,
             results: {
               create: [
                 // Sprint 20m (lower = better)
@@ -78,7 +78,7 @@ async function main() {
           },
           {
             name: 'Zosia',
-            birthDate: new Date('2016-08-22'),
+            birthYear: 2016,
             results: {
               create: [
                 { testType: 'sprint_20m', value: 4.9, unit: 's', testedAt: new Date('2024-02-01') },
@@ -116,7 +116,7 @@ async function main() {
         create: [
           {
             name: 'Kuba',
-            birthDate: new Date('2013-11-02'),
+            birthYear: 2013,
             results: {
               create: [
                 { testType: 'sprint_20m', value: 3.9, unit: 's', testedAt: new Date('2024-01-15') },
@@ -139,7 +139,7 @@ async function main() {
           },
           {
             name: 'Maja',
-            birthDate: new Date('2015-03-18'),
+            birthYear: 2015,
             results: {
               create: [
                 { testType: 'sprint_20m', value: 4.6, unit: 's', testedAt: new Date('2024-02-20') },
@@ -162,7 +162,7 @@ async function main() {
           },
           {
             name: 'Antek',
-            birthDate: new Date('2017-01-12'),
+            birthYear: 2017,
             results: {
               create: [
                 { testType: 'sprint_20m', value: 5.1, unit: 's', testedAt: new Date('2024-03-01') },

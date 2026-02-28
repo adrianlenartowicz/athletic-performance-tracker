@@ -53,11 +53,14 @@ export default async function TrainerTestSessionPage() {
               <input type="checkbox" name="childIds" value={child.id} className="peer sr-only" />
 
               <Card className="transition peer-checked:border-primary peer-checked:ring-1 peer-checked:ring-primary">
-                <CardContent className="flex items-center gap-3 p-4">
+                <CardContent className="flex items-center gap-3 pr-4 pl-4">
                   <div className="flex h-9 w-9 items-center justify-center rounded-full bg-muted text-sm font-medium">
                     {child.name.charAt(0)}
                   </div>
-                  <div className="font-medium">{child.name}</div>
+                  <div>
+                    <div className="font-medium">{child.name}</div>
+                    <p className="text-sm text-muted-foreground">{child.birthYear}</p>
+                  </div>
                 </CardContent>
               </Card>
             </label>
