@@ -31,12 +31,12 @@ export default async function TrainerTestSessionPage() {
 
       <section className="max-w-sm">
         <Select name="testType" required>
-          <SelectTrigger>
+          <SelectTrigger className="h-12 w-full px-4 text-base">
             <SelectValue placeholder="Wybierz test" />
           </SelectTrigger>
-          <SelectContent>
+          <SelectContent className="max-h-[60vh] text-base">
             {Object.entries(TEST_DEFINITIONS).map(([key, test]) => (
-              <SelectItem key={key} value={key}>
+              <SelectItem key={key} value={key} className="py-3 text-base">
                 {test.label}
               </SelectItem>
             ))}
