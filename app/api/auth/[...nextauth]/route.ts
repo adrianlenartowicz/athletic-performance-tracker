@@ -6,6 +6,11 @@ import type { NextAuthOptions } from 'next-auth';
 import type { JWT } from 'next-auth/jwt';
 
 export const authOptions: NextAuthOptions = {
+  session: {
+    strategy: 'jwt',
+    maxAge: 60 * 60 * 24 * 7,
+    updateAge: 60 * 60 * 24,
+  },
   callbacks: {
     async jwt({ token, user }: { token: JWT; user?: any }) {
       if (user) {
