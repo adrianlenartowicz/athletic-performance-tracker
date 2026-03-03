@@ -95,6 +95,8 @@ export default function TrainerSessionClient({ test, children }: Props) {
 
   const childAttempts = allAttemptsMap[child.id] ?? [];
   const attemptNumber = childAttempts.length + 1;
+  const isOutOfRange =
+    value !== null && (value < test.minValue || value > test.maxValue);
 
   function bestOf(values: number[]) {
     return test.betterDirection === 'lower' ? Math.min(...values) : Math.max(...values);
@@ -170,17 +172,27 @@ export default function TrainerSessionClient({ test, children }: Props) {
       </div>
 
       <div className="rounded-xl border p-5 space-y-4">
-        <input
-          ref={inputRef}
-          type="number"
-          step={test.step}
-          inputMode="decimal"
-          placeholder={`(${test.unit})`}
-          className="w-full rounded-lg border px-4 py-4 text-2xl text-center"
-          value={value ?? ''}
-          disabled={isSaving}
-          onChange={(e) => setValue(e.target.value === '' ? null : Number(e.target.value))}
-        />
+          <input
+            ref={inputRef}
+            type="number"
+            step={test.step}
+            inputMode="decimal"
+            placeholder={`(${test.unit})`}
+            className={`w-full rounded-lg border px-4 py-4 text-2xl text-center ${
+              isOutOfRange ? 'border-destructive focus-visible:border-destructive' : ''
+            }`}
+            value={value ?? ''}
+            disabled={isSaving}
+            onChange={(e) => setValue(e.target.value === '' ? null : Number(e.target.value))}
+          />
+          <div className="text-center text-xs text-muted-foreground">
+            Zakres: {test.minValue}–{test.maxValue} {test.unit}
+          </div>
+          {isOutOfRange && (
+            <div className="text-center text-sm text-destructive">
+              Wartość poza zakresem dla tego testu.
+            </div>
+          )}
 
         {childAttempts.length === 1 && (
           <div className="text-center text-sm text-muted-foreground">
@@ -194,22 +206,22 @@ export default function TrainerSessionClient({ test, children }: Props) {
           {childAttempts.length === 0 && (
             <>
               <button
-                type="button"
-                onClick={() => saveAttempt('next-child')}
-                disabled={value === null || isSaving}
-                className="w-full rounded-lg bg-primary py-3 text-primary-foreground disabled:opacity-40"
-              >
-                Zapisz i następne dziecko
-              </button>
+                  type="button"
+                  onClick={() => saveAttempt('next-child')}
+                  disabled={value === null || isSaving || isOutOfRange}
+                  className="w-full rounded-lg bg-primary py-3 text-primary-foreground disabled:opacity-40"
+                >
+                  Zapisz i następne dziecko
+                </button>
 
               <button
-                type="button"
-                onClick={() => saveAttempt('second-attempt')}
-                disabled={value === null || isSaving}
-                className="w-full rounded-lg border py-3 disabled:opacity-40"
-              >
-                Zapisz i druga próba
-              </button>
+                  type="button"
+                  onClick={() => saveAttempt('second-attempt')}
+                  disabled={value === null || isSaving || isOutOfRange}
+                  className="w-full rounded-lg border py-3 disabled:opacity-40"
+                >
+                  Zapisz i druga próba
+                </button>
             </>
           )}
 
@@ -217,7 +229,7 @@ export default function TrainerSessionClient({ test, children }: Props) {
             <button
               type="button"
               onClick={() => saveAttempt('next-child')}
-              disabled={value === null || isSaving}
+              disabled={value === null || isSaving || isOutOfRange}
               className="w-full rounded-lg bg-primary py-3 text-primary-foreground disabled:opacity-40"
             >
               Zapisz i zakończ dla dziecka

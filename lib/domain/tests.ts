@@ -6,6 +6,8 @@ export type TestDefinition = {
   unit: 's' | 'cm';
   betterDirection: 'lower' | 'higher';
   step: number;
+  minValue: number;
+  maxValue: number;
 };
 
 export const TEST_DEFINITIONS: Record<TestType, TestDefinition> = {
@@ -15,6 +17,8 @@ export const TEST_DEFINITIONS: Record<TestType, TestDefinition> = {
     unit: 's',
     betterDirection: 'lower',
     step: 0.5,
+    minValue: 2,
+    maxValue: 15,
   },
 
   broad_jump: {
@@ -23,6 +27,8 @@ export const TEST_DEFINITIONS: Record<TestType, TestDefinition> = {
     unit: 'cm',
     betterDirection: 'higher',
     step: 10,
+    minValue: 30,
+    maxValue: 350,
   },
 
   vertical_jump: {
@@ -31,6 +37,8 @@ export const TEST_DEFINITIONS: Record<TestType, TestDefinition> = {
     unit: 'cm',
     betterDirection: 'higher',
     step: 10,
+    minValue: 100,
+    maxValue: 300,
   },
 };
 
