@@ -129,7 +129,6 @@ export default function TrainerSessionClient({ test, children }: Props) {
           childId: child.id,
           testType: test.type,
           value: best,
-          unit: test.unit,
         });
       } finally {
         setIsSaving(false);
