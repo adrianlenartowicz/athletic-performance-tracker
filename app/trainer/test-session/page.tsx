@@ -17,7 +17,7 @@ import { Button } from '@/components/ui/button';
 export default async function TrainerTestSessionPage() {
   const session = await auth();
   if (!session || session.user.role !== 'TRAINER') redirect('/');
-  
+
   const children = await getAllChildrenForTrainer(session.user.id);
 
   return (

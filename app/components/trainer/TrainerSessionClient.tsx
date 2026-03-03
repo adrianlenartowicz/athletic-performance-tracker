@@ -38,6 +38,7 @@ export default function TrainerSessionClient({ test, children }: Props) {
   const [justSaved, setJustSaved] = useState(false);
   const [sessionResults, setSessionResults] = useState<SavedResult[]>([]);
   const [isSaving, setIsSaving] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -46,6 +47,7 @@ export default function TrainerSessionClient({ test, children }: Props) {
 
   useEffect(() => {
     inputRef.current?.focus();
+    setErrorMessage(null);
   }, [child]);
 
   if (!child) {
@@ -95,8 +97,7 @@ export default function TrainerSessionClient({ test, children }: Props) {
 
   const childAttempts = allAttemptsMap[child.id] ?? [];
   const attemptNumber = childAttempts.length + 1;
-  const isOutOfRange =
-    value !== null && (value < test.minValue || value > test.maxValue);
+  const isOutOfRange = value !== null && (value < test.minValue || value > test.maxValue);
 
   function bestOf(values: number[]) {
     return test.betterDirection === 'lower' ? Math.min(...values) : Math.max(...values);
@@ -112,6 +113,7 @@ export default function TrainerSessionClient({ test, children }: Props) {
 
   async function saveAttempt(action: 'next-child' | 'second-attempt') {
     if (value === null || isSaving) return;
+    setErrorMessage(null);
 
     const childUpdatedAttempts = [...childAttempts, value];
     const newAllAttemptsMap = {
@@ -132,6 +134,9 @@ export default function TrainerSessionClient({ test, children }: Props) {
           testType: test.type,
           value: best,
         });
+      } catch {
+        setErrorMessage('Nie udało się zapisać wyniku. Spróbuj ponownie.');
+        return;
       } finally {
         setIsSaving(false);
       }
@@ -172,27 +177,28 @@ export default function TrainerSessionClient({ test, children }: Props) {
       </div>
 
       <div className="rounded-xl border p-5 space-y-4">
-          <input
-            ref={inputRef}
-            type="number"
-            step={test.step}
-            inputMode="decimal"
-            placeholder={`(${test.unit})`}
-            className={`w-full rounded-lg border px-4 py-4 text-2xl text-center ${
-              isOutOfRange ? 'border-destructive focus-visible:border-destructive' : ''
-            }`}
-            value={value ?? ''}
-            disabled={isSaving}
-            onChange={(e) => setValue(e.target.value === '' ? null : Number(e.target.value))}
-          />
-          <div className="text-center text-xs text-muted-foreground">
-            Zakres: {test.minValue}–{test.maxValue} {test.unit}
+        <input
+          ref={inputRef}
+          type="number"
+          step={test.step}
+          inputMode="decimal"
+          placeholder={`(${test.unit})`}
+          className={`w-full rounded-lg border px-4 py-4 text-2xl text-center ${
+            isOutOfRange ? 'border-destructive focus-visible:border-destructive' : ''
+          }`}
+          value={value ?? ''}
+          disabled={isSaving}
+          onChange={(e) => setValue(e.target.value === '' ? null : Number(e.target.value))}
+        />
+        <div className="text-center text-xs text-muted-foreground">
+          Zakres: {test.minValue}–{test.maxValue} {test.unit}
+        </div>
+        {isOutOfRange && (
+          <div className="text-center text-sm text-destructive">
+            Wartość poza zakresem dla tego testu.
           </div>
-          {isOutOfRange && (
-            <div className="text-center text-sm text-destructive">
-              Wartość poza zakresem dla tego testu.
-            </div>
-          )}
+        )}
+        {errorMessage && <div className="text-center text-sm text-destructive">{errorMessage}</div>}
 
         {childAttempts.length === 1 && (
           <div className="text-center text-sm text-muted-foreground">
@@ -206,22 +212,22 @@ export default function TrainerSessionClient({ test, children }: Props) {
           {childAttempts.length === 0 && (
             <>
               <button
-                  type="button"
-                  onClick={() => saveAttempt('next-child')}
-                  disabled={value === null || isSaving || isOutOfRange}
-                  className="w-full rounded-lg bg-primary py-3 text-primary-foreground disabled:opacity-40"
-                >
-                  Zapisz i następne dziecko
-                </button>
+                type="button"
+                onClick={() => saveAttempt('next-child')}
+                disabled={value === null || isSaving || isOutOfRange}
+                className="w-full rounded-lg bg-primary py-3 text-primary-foreground disabled:opacity-40"
+              >
+                Zapisz i następne dziecko
+              </button>
 
               <button
-                  type="button"
-                  onClick={() => saveAttempt('second-attempt')}
-                  disabled={value === null || isSaving || isOutOfRange}
-                  className="w-full rounded-lg border py-3 disabled:opacity-40"
-                >
-                  Zapisz i druga próba
-                </button>
+                type="button"
+                onClick={() => saveAttempt('second-attempt')}
+                disabled={value === null || isSaving || isOutOfRange}
+                className="w-full rounded-lg border py-3 disabled:opacity-40"
+              >
+                Zapisz i druga próba
+              </button>
             </>
           )}
 
