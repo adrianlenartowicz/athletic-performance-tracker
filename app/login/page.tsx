@@ -34,7 +34,11 @@ export default function LoginPage() {
     setLoading(false);
 
     if (!res || res.error) {
-      setError('Nieprawidłowy email lub hasło');
+      if (res?.error === 'RateLimit') {
+        setError('Za dużo prób logowania. Spróbuj ponownie za 15 minut.');
+      } else {
+        setError('Nieprawidłowy email lub hasło');
+      }
       return;
     }
 
