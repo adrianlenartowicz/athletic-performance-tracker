@@ -22,9 +22,19 @@ const changePasswordSchema = z
     }
   });
 
+type ChangePasswordFieldErrors = {
+  currentPassword?: string;
+  newPassword?: string;
+  confirmPassword?: string;
+};
+
 export type ChangePasswordResult =
   | { success: true }
-  | { success: false; error: 'validation' | 'wrong_current' };
+  | {
+      success: false;
+      error: 'validation' | 'wrong_current';
+      fieldErrors?: ChangePasswordFieldErrors;
+    };
 
 export async function changePassword(formData: FormData): Promise<ChangePasswordResult> {
   const session = await requireAuth({ allowPasswordChange: true });
@@ -36,7 +46,16 @@ export async function changePassword(formData: FormData): Promise<ChangePassword
   });
 
   if (!parsed.success) {
-    return { success: false, error: 'validation' };
+    const fieldErrors = parsed.error.flatten().fieldErrors;
+    return {
+      success: false,
+      error: 'validation',
+      fieldErrors: {
+        currentPassword: fieldErrors.currentPassword?.[0],
+        newPassword: fieldErrors.newPassword?.[0],
+        confirmPassword: fieldErrors.confirmPassword?.[0],
+      },
+    };
   }
 
   const user = await prisma.user.findUnique({

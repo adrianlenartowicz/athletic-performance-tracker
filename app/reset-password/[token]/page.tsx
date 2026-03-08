@@ -10,7 +10,14 @@ type SubmitState =
   | { status: 'idle' }
   | { status: 'submitting' }
   | { status: 'success' }
-  | { status: 'error'; message: string };
+  | {
+      status: 'error';
+      message: string;
+      fieldErrors?: {
+        password?: string;
+        confirmPassword?: string;
+      };
+    };
 
 export default function ResetPasswordWithTokenPage() {
   const params = useParams();
@@ -40,6 +47,15 @@ export default function ResetPasswordWithTokenPage() {
       return;
     }
 
+    if (result.error === 'validation') {
+      setState({
+        status: 'error',
+        message: 'Popraw błędy w formularzu.',
+        fieldErrors: result.fieldErrors,
+      });
+      return;
+    }
+
     setState({ status: 'error', message: 'Nieprawidłowe dane.' });
   }
 
@@ -52,6 +68,7 @@ export default function ResetPasswordWithTokenPage() {
             <p className="text-sm text-muted-foreground">
               Wpisz nowe hasło, a następnie potwierdź.
             </p>
+            <p className="text-sm text-muted-foreground">Minimum 10 znaków.</p>
           </div>
 
           {state.status === 'success' ? (
@@ -64,9 +81,13 @@ export default function ResetPasswordWithTokenPage() {
                   type="password"
                   name="password"
                   required
+                  minLength={10}
                   className="w-full rounded-md border px-3 py-2 text-sm"
                   autoComplete="new-password"
                 />
+                {state.status === 'error' && state.fieldErrors?.password && (
+                  <p className="text-sm text-destructive">{state.fieldErrors.password}</p>
+                )}
               </div>
 
               <div className="space-y-2">
@@ -75,9 +96,13 @@ export default function ResetPasswordWithTokenPage() {
                   type="password"
                   name="confirmPassword"
                   required
+                  minLength={10}
                   className="w-full rounded-md border px-3 py-2 text-sm"
                   autoComplete="new-password"
                 />
+                {state.status === 'error' && state.fieldErrors?.confirmPassword && (
+                  <p className="text-sm text-destructive">{state.fieldErrors.confirmPassword}</p>
+                )}
               </div>
 
               {state.status === 'error' && (

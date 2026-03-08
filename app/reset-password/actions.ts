@@ -33,9 +33,18 @@ const resetPasswordSchema = z
     }
   });
 
+type ResetPasswordFieldErrors = {
+  password?: string;
+  confirmPassword?: string;
+};
+
 export type ResetPasswordResult =
   | { success: true }
-  | { success: false; error: 'invalid' | 'expired' };
+  | {
+      success: false;
+      error: 'invalid' | 'expired' | 'validation';
+      fieldErrors?: ResetPasswordFieldErrors;
+    };
 
 export async function requestPasswordReset(
   formData: FormData
@@ -87,7 +96,15 @@ export async function resetPasswordWithToken(
   });
 
   if (!parsed.success) {
-    return { success: false, error: 'invalid' };
+    const fieldErrors = parsed.error.flatten().fieldErrors;
+    return {
+      success: false,
+      error: 'validation',
+      fieldErrors: {
+        password: fieldErrors.password?.[0],
+        confirmPassword: fieldErrors.confirmPassword?.[0],
+      },
+    };
   }
 
   const tokenHash = crypto.createHash('sha256').update(parsed.data.token).digest('hex');
