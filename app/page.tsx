@@ -1,12 +1,8 @@
 import { redirect } from 'next/navigation';
-import { auth } from '@/lib/auth';
+import { requireAuth } from '@/lib/auth';
 
 export default async function Home() {
-  const session = await auth();
-
-  if (!session?.user) {
-    redirect('/login');
-  }
+  const session = await requireAuth();
 
   if (session.user.role === 'TRAINER') {
     redirect('/trainer');

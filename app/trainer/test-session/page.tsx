@@ -1,4 +1,4 @@
-import { auth } from '@/lib/auth';
+import { requireAuth } from '@/lib/auth';
 import { redirect } from 'next/navigation';
 import { getAllChildrenForTrainer } from '@/lib/queries/children';
 import { TEST_DEFINITIONS } from '@/lib/domain/tests';
@@ -15,8 +15,8 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 
 export default async function TrainerTestSessionPage() {
-  const session = await auth();
-  if (!session || session.user.role !== 'TRAINER') redirect('/');
+  const session = await requireAuth();
+  if (session.user.role !== 'TRAINER') redirect('/');
 
   const children = await getAllChildrenForTrainer(session.user.id);
 

@@ -1,5 +1,5 @@
 import { redirect } from 'next/navigation';
-import { auth } from '@/lib/auth';
+import { requireAuth } from '@/lib/auth';
 import { getChildDashboardForUser } from '@/lib/queries/dashboard';
 import { DashboardLayout } from '@/app/components/dashboard/dashboard';
 import { TestProgressWidgetServer } from '@/app/components/widgets/TestProgressWidget.server';
@@ -13,11 +13,7 @@ type Props = {
 export default async function ChildDashboardPage({ params }: Props) {
   const { childId } = await params;
 
-  const session = await auth();
-
-  if (!session?.user?.id) {
-    redirect('/api/auth/signin');
-  }
+  const session = await requireAuth();
 
   const dashboard = await getChildDashboardForUser(session.user.id, childId);
 

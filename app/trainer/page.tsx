@@ -1,12 +1,8 @@
-import { auth } from '@/lib/auth';
+import { requireAuth } from '@/lib/auth';
 import { redirect } from 'next/navigation';
 
 export default async function TrainerPage() {
-  const session = await auth();
-
-  if (!session?.user) {
-    redirect('/login');
-  }
+  const session = await requireAuth();
 
   if (session.user.role !== 'TRAINER') {
     redirect('/children');

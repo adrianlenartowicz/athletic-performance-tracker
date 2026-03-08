@@ -1,15 +1,15 @@
 'use server';
 
-import { auth } from '@/lib/auth';
+import { requireAuth } from '@/lib/auth';
 import { redirect } from 'next/navigation';
 import prisma from '@/lib/prisma';
 import { TEST_DEFINITIONS } from '@/lib/domain/tests';
 import { parseSaveTestResultInput, type SaveTestResultInput } from '@/lib/validation/test-result';
 
 export async function saveTestResult(input: SaveTestResultInput) {
-  const session = await auth();
+  const session = await requireAuth();
 
-  if (!session || session.user.role !== 'TRAINER') {
+  if (session.user.role !== 'TRAINER') {
     redirect('/');
   }
 

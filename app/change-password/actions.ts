@@ -4,7 +4,7 @@ import { z } from 'zod';
 import bcrypt from 'bcryptjs';
 import { redirect } from 'next/navigation';
 import prisma from '@/lib/prisma';
-import { auth } from '@/lib/auth';
+import { requireAuth } from '@/lib/auth';
 
 const changePasswordSchema = z
   .object({
@@ -27,10 +27,7 @@ export type ChangePasswordResult =
   | { success: false; error: 'validation' | 'wrong_current' };
 
 export async function changePassword(formData: FormData): Promise<ChangePasswordResult> {
-  const session = await auth();
-  if (!session?.user?.id) {
-    redirect('/login');
-  }
+  const session = await requireAuth({ allowPasswordChange: true });
 
   const parsed = changePasswordSchema.safeParse({
     currentPassword: formData.get('currentPassword'),

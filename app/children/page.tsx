@@ -1,14 +1,9 @@
-import { redirect } from 'next/navigation';
-import { auth } from '@/lib/auth';
+import { requireAuth } from '@/lib/auth';
 import { getChildrenForUser } from '@/lib/queries/children';
 import Link from 'next/link';
 
 export default async function ChildrenPage() {
-  const session = await auth();
-
-  if (!session?.user?.id) {
-    redirect('/api/auth/signin');
-  }
+  const session = await requireAuth();
 
   const children = await getChildrenForUser(session.user.id);
 

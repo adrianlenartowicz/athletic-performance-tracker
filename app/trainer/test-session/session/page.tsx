@@ -1,4 +1,4 @@
-import { auth } from '@/lib/auth';
+import { requireAuth } from '@/lib/auth';
 import { redirect } from 'next/navigation';
 import { getChildrenByIds } from '@/lib/queries/children';
 import { TEST_DEFINITIONS } from '@/lib//domain/tests';
@@ -12,8 +12,8 @@ type Props = {
 };
 
 export default async function TrainerSessionPage({ searchParams }: Props) {
-  const session = await auth();
-  if (!session || session.user.role !== 'TRAINER') redirect('/');
+  const session = await requireAuth();
+  if (session.user.role !== 'TRAINER') redirect('/');
 
   const params = await searchParams;
   const testKey = params.test;

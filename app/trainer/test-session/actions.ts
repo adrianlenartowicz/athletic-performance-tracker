@@ -1,6 +1,6 @@
 'use server';
 
-import { auth } from '@/lib/auth';
+import { requireAuth } from '@/lib/auth';
 import { redirect } from 'next/navigation';
 import { getChildrenByIds } from '@/lib/queries/children';
 import { TEST_DEFINITIONS } from '@/lib/domain/tests';
@@ -10,8 +10,8 @@ function isTestType(value: string): value is keyof typeof TEST_DEFINITIONS {
 }
 
 export async function startTestSession(formData: FormData) {
-  const session = await auth();
-  if (!session || session.user.role !== 'TRAINER') redirect('/');
+  const session = await requireAuth();
+  if (session.user.role !== 'TRAINER') redirect('/');
 
   const testType = formData.get('testType') as string;
   const childIds = formData.getAll('childIds') as string[];
