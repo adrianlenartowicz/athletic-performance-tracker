@@ -81,6 +81,15 @@ export default function LoginPage() {
 
         {error && <p className="text-sm text-destructive">{error}</p>}
 
+        <div className="text-right">
+          <a
+            href="/reset-password"
+            className="text-sm text-primary underline-offset-4 hover:underline"
+          >
+            Nie pamiętasz hasła?
+          </a>
+        </div>
+
         <button
           type="submit"
           disabled={loading}
