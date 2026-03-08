@@ -2,6 +2,7 @@
 
 import { z } from 'zod';
 import crypto from 'crypto';
+import bcrypt from 'bcryptjs';
 import prisma from '@/lib/prisma';
 import { sendPasswordResetEmail } from '@/lib/email';
 
@@ -15,6 +16,26 @@ const requestPasswordResetSchema = z.object({
 export type RequestPasswordResetResult = {
   success: true;
 };
+
+const resetPasswordSchema = z
+  .object({
+    token: z.string().min(1),
+    password: z.string().min(8).max(128),
+    confirmPassword: z.string().min(8).max(128),
+  })
+  .superRefine((data, ctx) => {
+    if (data.password !== data.confirmPassword) {
+      ctx.addIssue({
+        code: 'custom',
+        path: ['confirmPassword'],
+        message: 'Passwords do not match',
+      });
+    }
+  });
+
+export type ResetPasswordResult =
+  | { success: true }
+  | { success: false; error: 'invalid' | 'expired' };
 
 export async function requestPasswordReset(
   formData: FormData
@@ -51,6 +72,58 @@ export async function requestPasswordReset(
   const resetUrl = `${baseUrl}/reset-password/${rawToken}`;
 
   await sendPasswordResetEmail(user.email, resetUrl);
+
+  return { success: true };
+}
+
+export async function resetPasswordWithToken(
+  token: string,
+  formData: FormData
+): Promise<ResetPasswordResult> {
+  const parsed = resetPasswordSchema.safeParse({
+    token,
+    password: formData.get('password'),
+    confirmPassword: formData.get('confirmPassword'),
+  });
+
+  if (!parsed.success) {
+    return { success: false, error: 'invalid' };
+  }
+
+  const tokenHash = crypto.createHash('sha256').update(parsed.data.token).digest('hex');
+
+  const now = new Date();
+
+  const resetToken = await prisma.passwordResetToken.findFirst({
+    where: {
+      tokenHash,
+      usedAt: null,
+    },
+  });
+
+  if (!resetToken) {
+    return { success: false, error: 'invalid' };
+  }
+
+  if (resetToken.expiresAt <= now) {
+    return { success: false, error: 'expired' };
+  }
+
+  const passwordHash = await bcrypt.hash(parsed.data.password, 10);
+
+  await prisma.$transaction([
+    prisma.user.update({
+      where: { id: resetToken.userId },
+      data: {
+        passwordHash,
+        mustChangePassword: false,
+      },
+    }),
+    prisma.passwordResetToken.update({
+      where: { id: resetToken.id },
+      data: { usedAt: now },
+    }),
+  ]);
 
   return { success: true };
 }
