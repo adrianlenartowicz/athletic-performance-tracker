@@ -3,6 +3,11 @@
 import { auth } from '@/lib/auth';
 import { redirect } from 'next/navigation';
 import { getChildrenByIds } from '@/lib/queries/children';
+import { TEST_DEFINITIONS } from '@/lib/domain/tests';
+
+function isTestType(value: string): value is keyof typeof TEST_DEFINITIONS {
+  return Object.prototype.hasOwnProperty.call(TEST_DEFINITIONS, value);
+}
 
 export async function startTestSession(formData: FormData) {
   const session = await auth();
@@ -11,7 +16,11 @@ export async function startTestSession(formData: FormData) {
   const testType = formData.get('testType') as string;
   const childIds = formData.getAll('childIds') as string[];
 
-  if (!testType || childIds.length === 0) {
+  if (!testType || !isTestType(testType)) {
+    redirect('/trainer/test-session');
+  }
+
+  if (childIds.length === 0) {
     redirect('/trainer/test-session');
   }
 
