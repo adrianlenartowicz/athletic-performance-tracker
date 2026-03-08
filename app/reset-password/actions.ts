@@ -20,8 +20,8 @@ export type RequestPasswordResetResult = {
 const resetPasswordSchema = z
   .object({
     token: z.string().min(1),
-    password: z.string().min(8).max(128),
-    confirmPassword: z.string().min(8).max(128),
+    password: z.string().min(10).max(128),
+    confirmPassword: z.string().min(10).max(128),
   })
   .superRefine((data, ctx) => {
     if (data.password !== data.confirmPassword) {

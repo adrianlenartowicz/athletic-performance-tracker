@@ -9,8 +9,8 @@ import { requireAuth } from '@/lib/auth';
 const changePasswordSchema = z
   .object({
     currentPassword: z.string().min(1),
-    newPassword: z.string().min(8).max(128),
-    confirmPassword: z.string().min(8).max(128),
+    newPassword: z.string().min(10).max(128),
+    confirmPassword: z.string().min(10).max(128),
   })
   .superRefine((data, ctx) => {
     if (data.newPassword !== data.confirmPassword) {
