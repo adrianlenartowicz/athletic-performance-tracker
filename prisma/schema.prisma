@@ -13,7 +13,9 @@ model User {
   role     UserRole
   children Child[]
   trainerGroups TrainerGroup[]
+  passwordResetTokens PasswordResetToken[]
 
+  mustChangePassword Boolean @default(false)
   createdAt DateTime @default(now())
 }
 
@@ -81,6 +83,19 @@ model LoginAttempt {
   @@unique([key, windowStart], name: "key_windowStart")
   @@index([email])
   @@index([ip])
+}
+
+model PasswordResetToken {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  tokenHash String
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@index([tokenHash])
 }
 
 enum UserRole {
