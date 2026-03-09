@@ -2,7 +2,7 @@
 
 import { requireAuth } from '@/lib/auth';
 import { redirect } from 'next/navigation';
-import { getChildrenByIds } from '@/lib/queries/children';
+import { getChildrenByIds, type TrainerChildListItem } from '@/lib/queries/children';
 import { TEST_DEFINITIONS } from '@/lib/domain/tests';
 
 function isTestType(value: string): value is keyof typeof TEST_DEFINITIONS {
@@ -31,7 +31,7 @@ export async function startTestSession(formData: FormData) {
 
   const params = new URLSearchParams();
   params.set('test', testType);
-  allowedChildren.forEach((child) => params.append('child', child.id));
+  allowedChildren.forEach((child: TrainerChildListItem) => params.append('child', child.id));
 
   redirect(`/trainer/test-session/session?${params.toString()}`);
 }

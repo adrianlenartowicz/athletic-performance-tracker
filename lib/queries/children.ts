@@ -20,7 +20,13 @@ export function getChildrenForUser(userId: string): Promise<ChildListItem[]> {
   });
 }
 
-export async function getAllChildrenForTrainer(trainerId: string) {
+export type TrainerChildListItem = {
+  id: string;
+  name: string;
+  birthYear: number;
+};
+
+export async function getAllChildrenForTrainer(trainerId: string): Promise<TrainerChildListItem[]> {
   return prisma.child.findMany({
     where: {
       group: {
@@ -40,7 +46,10 @@ export async function getAllChildrenForTrainer(trainerId: string) {
   });
 }
 
-export async function getChildrenByIds(childIds: string[], trainerId: string) {
+export async function getChildrenByIds(
+  childIds: string[],
+  trainerId: string
+): Promise<TrainerChildListItem[]> {
   if (childIds.length === 0) return [];
 
   return prisma.child.findMany({
