@@ -3,8 +3,26 @@
 import { z } from 'zod';
 import crypto from 'crypto';
 import bcrypt from 'bcryptjs';
+import { headers } from 'next/headers';
 import prisma from '@/lib/prisma';
 import { sendPasswordResetEmail } from '@/lib/email';
+
+const RESET_RATE_LIMIT = {
+  windowMs: 15 * 60 * 1000,
+  maxAttempts: 5,
+  cleanupAfterMs: 24 * 60 * 60 * 1000,
+};
+
+function getWindowStart(nowMs: number, windowMs: number) {
+  return new Date(Math.floor(nowMs / windowMs) * windowMs);
+}
+
+async function getClientIpFromHeaders(): Promise<string | null> {
+  const requestHeaders = await headers();
+  const forwarded = requestHeaders.get('x-forwarded-for');
+  if (forwarded) return forwarded.split(',')[0].trim();
+  return requestHeaders.get('x-real-ip');
+}
 
 const requestPasswordResetSchema = z.object({
   email: z
@@ -57,13 +75,41 @@ export async function requestPasswordReset(
     return { success: true };
   }
 
+  const email = parsed.data.email;
+  const ip: string = (await getClientIpFromHeaders()) ?? 'unknown';
+  const nowMs = Date.now();
+  const windowStart = getWindowStart(nowMs, RESET_RATE_LIMIT.windowMs);
+  const key = `reset|${email}|${ip}`;
+
+  await prisma.loginAttempt.deleteMany({
+    where: {
+      windowStart: { lt: new Date(nowMs - RESET_RATE_LIMIT.cleanupAfterMs) },
+    },
+  });
+
+  const attempt = await prisma.loginAttempt.upsert({
+    where: { key_windowStart: { key, windowStart } },
+    create: { key, email, ip, windowStart, count: 1 },
+    update: { count: { increment: 1 } },
+  });
+
+  if (attempt.count > RESET_RATE_LIMIT.maxAttempts) {
+    return { success: true };
+  }
+
   const user = await prisma.user.findUnique({
-    where: { email: parsed.data.email },
+    where: { email },
   });
 
   if (!user) {
     return { success: true };
   }
+
+  const now = new Date();
+  await prisma.passwordResetToken.updateMany({
+    where: { userId: user.id, usedAt: null },
+    data: { usedAt: now },
+  });
 
   const rawToken = crypto.randomBytes(32).toString('hex');
   const tokenHash = crypto.createHash('sha256').update(rawToken).digest('hex');
@@ -136,8 +182,8 @@ export async function resetPasswordWithToken(
         mustChangePassword: false,
       },
     }),
-    prisma.passwordResetToken.update({
-      where: { id: resetToken.id },
+    prisma.passwordResetToken.updateMany({
+      where: { userId: resetToken.userId, usedAt: null },
       data: { usedAt: now },
     }),
   ]);
