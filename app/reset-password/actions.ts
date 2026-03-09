@@ -180,6 +180,7 @@ export async function resetPasswordWithToken(
       data: {
         passwordHash,
         mustChangePassword: false,
+        sessionVersion: { increment: 1 },
       },
     }),
     prisma.passwordResetToken.updateMany({

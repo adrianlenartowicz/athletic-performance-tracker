@@ -78,6 +78,7 @@ export async function changePassword(formData: FormData): Promise<ChangePassword
     data: {
       passwordHash,
       mustChangePassword: false,
+      sessionVersion: { increment: 1 },
     },
   });
 

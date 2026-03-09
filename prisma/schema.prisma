@@ -16,6 +16,7 @@ model User {
   passwordResetTokens PasswordResetToken[]
 
   mustChangePassword Boolean @default(false)
+  sessionVersion Int @default(0)
   createdAt DateTime @default(now())
 }
 

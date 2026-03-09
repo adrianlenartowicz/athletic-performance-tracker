@@ -20,10 +20,15 @@ export async function requireAuth(options?: RequireAuthOptions) {
 
   const user = await prisma.user.findUnique({
     where: { id: session.user.id },
-    select: { mustChangePassword: true },
+    select: { mustChangePassword: true, sessionVersion: true },
   });
 
   if (!user) {
+    redirect('/login');
+  }
+
+  const sessionVersion = (session.user as { sessionVersion?: number }).sessionVersion;
+  if (sessionVersion === undefined || user.sessionVersion !== sessionVersion) {
     redirect('/login');
   }
 
