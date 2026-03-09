@@ -5,6 +5,10 @@ export function getChildrenForUser(userId: string) {
     where: {
       parentId: userId,
     },
+    select: {
+      id: true,
+      name: true,
+    },
     orderBy: {
       name: 'asc',
     },
