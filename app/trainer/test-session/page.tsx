@@ -26,7 +26,7 @@ export default async function TrainerTestSessionPage() {
       <header className="space-y-1">
         <h1 className="text-2xl font-semibold tracking-tight">Nowa sesja testowa</h1>
         <p className="text-sm text-muted-foreground">
-          Wybierz test oraz dzieci, które bierzę udział w pomiarze
+          Wybierz test oraz dzieci, które biorą udział w pomiarze
         </p>
       </header>
 
