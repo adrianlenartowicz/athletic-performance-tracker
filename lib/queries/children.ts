@@ -1,6 +1,11 @@
 import prisma from '@/lib/prisma';
 
-export function getChildrenForUser(userId: string) {
+export type ChildListItem = {
+  id: string;
+  name: string;
+};
+
+export function getChildrenForUser(userId: string): Promise<ChildListItem[]> {
   return prisma.child.findMany({
     where: {
       parentId: userId,

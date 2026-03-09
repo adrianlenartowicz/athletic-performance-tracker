@@ -1,5 +1,5 @@
 import { requireAuth } from '@/lib/auth';
-import { getChildrenForUser } from '@/lib/queries/children';
+import { getChildrenForUser, type ChildListItem } from '@/lib/queries/children';
 import Link from 'next/link';
 
 export default async function ChildrenPage() {
@@ -26,7 +26,7 @@ export default async function ChildrenPage() {
                 : 'grid-cols-1 sm:grid-cols-2 md:grid-cols-3'
           }`}
         >
-          {children.map((child) => (
+          {children.map((child: ChildListItem) => (
             <Link
               key={child.id}
               href={`/children/${child.id}/dashboard`}
