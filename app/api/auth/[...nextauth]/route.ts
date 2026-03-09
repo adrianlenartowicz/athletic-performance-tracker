@@ -19,11 +19,27 @@ function getWindowStart(nowMs: number, windowMs: number) {
   return new Date(Math.floor(nowMs / windowMs) * windowMs);
 }
 
-function getClientIp(req?: Request) {
+type HeadersLike = Headers | Record<string, string | string[] | undefined>;
+
+function getHeader(headers: HeadersLike | undefined, name: string) {
+  if (!headers) return null;
+
+  if (headers instanceof Headers) {
+    return headers.get(name);
+  }
+
+  const key = Object.keys(headers).find((h) => h.toLowerCase() === name.toLowerCase());
+  const value = key ? headers[key] : undefined;
+  if (!value) return null;
+
+  return Array.isArray(value) ? value[0] : value;
+}
+
+function getClientIp(req?: { headers?: HeadersLike }) {
   if (!req) return null;
-  const forwarded = req.headers.get('x-forwarded-for');
+  const forwarded = getHeader(req.headers, 'x-forwarded-for');
   if (forwarded) return forwarded.split(',')[0].trim();
-  return req.headers.get('x-real-ip');
+  return getHeader(req.headers, 'x-real-ip');
 }
 
 export const authOptions: NextAuthOptions = {
