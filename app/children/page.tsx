@@ -1,11 +1,12 @@
 import { requireAuth } from '@/lib/auth';
 import { getChildrenForUser } from '@/lib/queries/children';
 import Link from 'next/link';
+import type { Child } from '@prisma/client';
 
 export default async function ChildrenPage() {
   const session = await requireAuth();
 
-  const children = await getChildrenForUser(session.user.id);
+  const children: Child[] = await getChildrenForUser(session.user.id);
 
   return (
     <main className="min-h-screen bg-muted/40 p-6">

@@ -88,29 +88,30 @@ export default function SessionRestorePrompt({ childrenList }: Props) {
 
   if (!session) return null;
 
-  const definition = TEST_DEFINITIONS[session.testType as keyof typeof TEST_DEFINITIONS];
-  const normalizedChildrenKey = [...session.childrenIds].sort().join(',');
-  const normalizedStorageKey = `trainerSession:${session.testType}:${normalizedChildrenKey}`;
+  const activeSession = session;
+  const definition = TEST_DEFINITIONS[activeSession.testType as keyof typeof TEST_DEFINITIONS];
+  const normalizedChildrenKey = [...activeSession.childrenIds].sort().join(',');
+  const normalizedStorageKey = `trainerSession:${activeSession.testType}:${normalizedChildrenKey}`;
   const restoreFlagKey = `trainerSession:restore:${normalizedStorageKey}`;
 
   function handleRestore() {
-    if (normalizedStorageKey !== session.storageKey) {
-      const raw = localStorage.getItem(session.storageKey);
+    if (normalizedStorageKey !== activeSession.storageKey) {
+      const raw = localStorage.getItem(activeSession.storageKey);
       if (raw) {
         localStorage.setItem(normalizedStorageKey, raw);
-        localStorage.removeItem(session.storageKey);
+        localStorage.removeItem(activeSession.storageKey);
       }
     }
     const params = new URLSearchParams();
-    params.set('test', session.testType);
-    session.childrenIds.forEach((id) => params.append('child', id));
+    params.set('test', activeSession.testType);
+    activeSession.childrenIds.forEach((id) => params.append('child', id));
 
     sessionStorage.setItem(restoreFlagKey, '1');
     router.push(`/trainer/test-session/session?${params.toString()}`);
   }
 
   function handleDiscard() {
-    localStorage.removeItem(session.storageKey);
+    localStorage.removeItem(activeSession.storageKey);
     setSession(null);
   }
 
@@ -119,11 +120,11 @@ export default function SessionRestorePrompt({ childrenList }: Props) {
       <div className="space-y-1">
         <div className="font-medium">Wykryto przerwaną sesję</div>
         <div className="text-sm text-muted-foreground">
-          Test: {definition?.label ?? session.testType}
+          Test: {definition?.label ?? activeSession.testType}
         </div>
         <div className="text-xs text-muted-foreground">
           Ostatni zapis:{' '}
-          {new Date(session.savedAt).toLocaleString('pl-PL', {
+          {new Date(activeSession.savedAt).toLocaleString('pl-PL', {
             day: '2-digit',
             month: '2-digit',
             hour: '2-digit',
@@ -131,19 +132,20 @@ export default function SessionRestorePrompt({ childrenList }: Props) {
           })}
         </div>
         <div className="text-xs text-muted-foreground">
-          Pozostało dzieci: {session.queue.length}
+          Pozostało dzieci: {activeSession.queue.length}
         </div>
       </div>
 
-      {(session.sessionResults.length > 0 || Object.keys(session.allAttemptsMap).length > 0) && (
+      {(activeSession.sessionResults.length > 0 ||
+        Object.keys(activeSession.allAttemptsMap).length > 0) && (
         <div className="rounded-md border bg-background p-3 space-y-3">
           <div className="text-xs font-medium text-muted-foreground">Podgląd stanu sesji</div>
 
-          {session.sessionResults.length > 0 && (
+          {activeSession.sessionResults.length > 0 && (
             <div className="space-y-2">
               <div className="text-xs text-muted-foreground">Zapisane w bazie</div>
               <div className="space-y-1">
-                {session.sessionResults.map((result) => (
+                {activeSession.sessionResults.map((result) => (
                   <div
                     key={`saved-${result.id}`}
                     className="flex items-center justify-between rounded-md border px-3 py-2 text-sm"
@@ -158,11 +160,11 @@ export default function SessionRestorePrompt({ childrenList }: Props) {
             </div>
           )}
 
-          {Object.keys(session.allAttemptsMap).length > 0 && (
+          {Object.keys(activeSession.allAttemptsMap).length > 0 && (
             <div className="space-y-2">
               <div className="text-xs text-muted-foreground">W trakcie (niezapisane)</div>
               <div className="space-y-1">
-                {Object.entries(session.allAttemptsMap).map(([childId, attempts]) => (
+                {Object.entries(activeSession.allAttemptsMap).map(([childId, attempts]) => (
                   <div
                     key={`attempt-${childId}`}
                     className="flex items-center justify-between rounded-md border px-3 py-2 text-sm"
