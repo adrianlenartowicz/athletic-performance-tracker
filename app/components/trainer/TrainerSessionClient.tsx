@@ -39,8 +39,14 @@ export default function TrainerSessionClient({ test, children }: Props) {
   const [sessionResults, setSessionResults] = useState<SavedResult[]>([]);
   const [isSaving, setIsSaving] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [restoreNotice, setRestoreNotice] = useState<string | null>(null);
 
   const inputRef = useRef<HTMLInputElement>(null);
+  const childrenKey = [...children]
+    .map((c) => c.id)
+    .sort()
+    .join(',');
+  const storageKey = `trainerSession:${test.type}:${childrenKey}`;
 
   const child = queue[0];
   const nextChild = queue[1];
@@ -49,6 +55,72 @@ export default function TrainerSessionClient({ test, children }: Props) {
     inputRef.current?.focus();
     setErrorMessage(null);
   }, [child]);
+
+  useEffect(() => {
+    const raw = localStorage.getItem(storageKey);
+    if (!raw) return;
+
+    try {
+      const parsed = JSON.parse(raw) as {
+        testType: string;
+        childrenIds: string[];
+        queue: Child[];
+        allAttemptsMap: Record<string, number[]>;
+        value: number | null;
+        sessionResults: SavedResult[];
+        savedAt: number;
+      };
+
+      if (parsed.testType !== test.type) return;
+      const parsedKey = [...(parsed.childrenIds ?? [])].sort().join(',');
+      if (parsedKey !== childrenKey) return;
+
+      const hasLocalData =
+        (parsed.sessionResults?.length ?? 0) > 0 ||
+        Object.keys(parsed.allAttemptsMap ?? {}).length > 0 ||
+        parsed.value !== null;
+
+      if (!hasLocalData) {
+        localStorage.removeItem(storageKey);
+        return;
+      }
+
+      setQueue(parsed.queue ?? children);
+      setAllAttemptsMap(parsed.allAttemptsMap ?? {});
+      setValue(parsed.value ?? null);
+      setSessionResults(parsed.sessionResults ?? []);
+      setRestoreNotice('Przywrócono przerwaną sesję.');
+      setTimeout(() => setRestoreNotice(null), 2500);
+    } catch {
+      // If parsing fails, ignore saved state.
+    }
+  }, [storageKey, test.type, children]);
+
+  useEffect(() => {
+    const hasLocalData =
+      sessionResults.length > 0 || Object.keys(allAttemptsMap).length > 0 || value !== null;
+
+    if (!hasLocalData) {
+      return;
+    }
+    const payload = {
+      testType: test.type,
+      childrenIds: [...children].map((c) => c.id).sort(),
+      queue,
+      allAttemptsMap,
+      value,
+      sessionResults,
+      savedAt: Date.now(),
+    };
+
+    localStorage.setItem(storageKey, JSON.stringify(payload));
+  }, [storageKey, test.type, children, queue, allAttemptsMap, value, sessionResults]);
+
+  useEffect(() => {
+    if (queue.length === 0) {
+      localStorage.removeItem(storageKey);
+    }
+  }, [queue.length, storageKey]);
 
   if (!child) {
     return (
@@ -166,6 +238,9 @@ export default function TrainerSessionClient({ test, children }: Props) {
 
   return (
     <main className="mx-auto max-w-md p-4 space-y-6">
+      {restoreNotice && (
+        <div className="rounded-lg border bg-muted/40 p-3 text-sm">{restoreNotice}</div>
+      )}
       <header className="space-y-1">
         <div className="text-sm text-muted-foreground">{test.label}</div>
         <div className="text-lg font-semibold">{child.name}</div>

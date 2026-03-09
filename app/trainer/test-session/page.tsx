@@ -3,6 +3,7 @@ import { redirect } from 'next/navigation';
 import { getAllChildrenForTrainer } from '@/lib/queries/children';
 import { TEST_DEFINITIONS } from '@/lib/domain/tests';
 import { startTestSession } from './actions';
+import SessionRestorePrompt from '@/app/components/trainer/SessionRestorePrompt';
 
 import {
   Select,
@@ -28,6 +29,8 @@ export default async function TrainerTestSessionPage() {
           Wybierz test oraz dzieci, które bierzę udział w pomiarze
         </p>
       </header>
+
+      <SessionRestorePrompt childrenList={children} />
 
       <section className="max-w-sm">
         <Select name="testType" required>
