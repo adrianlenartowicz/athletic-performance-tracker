@@ -56,13 +56,13 @@ export function ProgressChart({
 
   return (
     <Card>
-      <CardHeader className="pb-2">
+      <CardHeader className="pb-1">
         <CardTitle className="text-sm font-medium">{title}</CardTitle>
       </CardHeader>
 
-      <CardContent>
-        <ChartContainer config={chartConfig}>
-          <LineChart data={data} margin={{ top: 20, bottom: 20, left: 10, right: 20 }}>
+      <CardContent className="px-3 sm:px-6">
+        <ChartContainer className="h-52 w-full aspect-auto justify-start" config={chartConfig}>
+          <LineChart data={data} margin={{ top: 12, bottom: 16, left: 8, right: 4 }}>
             <CartesianGrid vertical={false} strokeDasharray="3 3" />
 
             <XAxis

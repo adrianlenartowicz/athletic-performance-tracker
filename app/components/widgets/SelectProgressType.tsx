@@ -19,7 +19,7 @@ type Props = {
 export function SelectProgressType({ value, onChange }: Props) {
   return (
     <Select value={value} onValueChange={onChange}>
-      <SelectTrigger className="w-48">
+      <SelectTrigger className="w-full min-w-[220px]">
         <SelectValue />
       </SelectTrigger>
       <SelectContent>
