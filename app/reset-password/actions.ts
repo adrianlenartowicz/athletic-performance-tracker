@@ -3,9 +3,15 @@
 import { z } from 'zod';
 import crypto from 'crypto';
 import bcrypt from 'bcryptjs';
-import { headers } from 'next/headers';
+import { cookies, headers } from 'next/headers';
 import prisma from '@/lib/prisma';
 import { sendPasswordResetEmail } from '@/lib/email';
+import {
+  RESET_PASSWORD_TOKEN_COOKIE_NAME,
+  RESET_PASSWORD_TOKEN_TTL_SECONDS,
+  getResetPasswordTokenCookieOptions,
+  isResetPasswordTokenFormatValid,
+} from '@/lib/reset-password';
 
 const RESET_RATE_LIMIT = {
   windowMs: 15 * 60 * 1000,
@@ -64,6 +70,11 @@ export type ResetPasswordResult =
       fieldErrors?: ResetPasswordFieldErrors;
     };
 
+async function clearResetPasswordCookie() {
+  const cookieStore = await cookies();
+  cookieStore.set(RESET_PASSWORD_TOKEN_COOKIE_NAME, '', getResetPasswordTokenCookieOptions(0));
+}
+
 export async function requestPasswordReset(
   formData: FormData
 ): Promise<RequestPasswordResetResult> {
@@ -113,7 +124,7 @@ export async function requestPasswordReset(
 
   const rawToken = crypto.randomBytes(32).toString('hex');
   const tokenHash = crypto.createHash('sha256').update(rawToken).digest('hex');
-  const expiresAt = new Date(Date.now() + 60 * 60 * 1000);
+  const expiresAt = new Date(Date.now() + RESET_PASSWORD_TOKEN_TTL_SECONDS * 1000);
 
   await prisma.passwordResetToken.create({
     data: {
@@ -135,6 +146,10 @@ export async function resetPasswordWithToken(
   token: string,
   formData: FormData
 ): Promise<ResetPasswordResult> {
+  if (!isResetPasswordTokenFormatValid(token)) {
+    return { success: false, error: 'invalid' };
+  }
+
   const parsed = resetPasswordSchema.safeParse({
     token,
     password: formData.get('password'),
@@ -190,4 +205,22 @@ export async function resetPasswordWithToken(
   ]);
 
   return { success: true };
+}
+
+export async function resetPasswordFromCookie(formData: FormData): Promise<ResetPasswordResult> {
+  const cookieStore = await cookies();
+  const token = cookieStore.get(RESET_PASSWORD_TOKEN_COOKIE_NAME)?.value;
+
+  if (!token || !isResetPasswordTokenFormatValid(token)) {
+    await clearResetPasswordCookie();
+    return { success: false, error: 'invalid' };
+  }
+
+  const result = await resetPasswordWithToken(token, formData);
+
+  if (result.success || result.error === 'invalid' || result.error === 'expired') {
+    await clearResetPasswordCookie();
+  }
+
+  return result;
 }
