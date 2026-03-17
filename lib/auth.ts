@@ -7,11 +7,11 @@ export function auth() {
   return getServerSession(authOptions);
 }
 
-type RequireAuthOptions = {
-  allowPasswordChange?: boolean;
+type RequireAuthInternalOptions = {
+  allowMustChangePassword: boolean;
 };
 
-export async function requireAuth(options?: RequireAuthOptions) {
+async function requireAuthInternal(options: RequireAuthInternalOptions) {
   const session = await auth();
 
   if (!session?.user?.id) {
@@ -32,9 +32,17 @@ export async function requireAuth(options?: RequireAuthOptions) {
     redirect('/login');
   }
 
-  if (user.mustChangePassword && !options?.allowPasswordChange) {
+  if (user.mustChangePassword && !options.allowMustChangePassword) {
     redirect('/change-password');
   }
 
   return session;
+}
+
+export async function requireAuth() {
+  return requireAuthInternal({ allowMustChangePassword: false });
+}
+
+export async function requireAuthForPasswordChange() {
+  return requireAuthInternal({ allowMustChangePassword: true });
 }
