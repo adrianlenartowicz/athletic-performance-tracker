@@ -24,7 +24,9 @@ export default async function ChildDashboardPage({ params }: Props) {
   return (
     <DashboardLayout>
       <div className="md:col-span-2 space-y-2">
-        <h1 className="text-2xl font-semibold tracking-tight">Postępy dziecka</h1>
+        <h1 className="text-2xl font-semibold tracking-tight">
+          Postępy dziecka - {dashboard.child.name}
+        </h1>
 
         <p className="text-sm text-muted-foreground">Podsumowanie wyników i rozwoju sprawności</p>
       </div>
