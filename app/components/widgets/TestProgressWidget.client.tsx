@@ -70,7 +70,7 @@ export function TestProgressWidgetClient({
               <Info />
               <AlertTitle>Pierwszy pomiar</AlertTitle>
               <AlertDescription>
-                Kolejny wynik pozwoli policzyć zmianę i pokazać progres na wykresie.
+                Kolejny wynik pozwoli policzyć zmianę i pokazać postępy na wykresie.
               </AlertDescription>
             </Alert>
           </div>
