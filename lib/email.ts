@@ -1,4 +1,5 @@
 import { Resend } from 'resend';
+import { RESET_PASSWORD_TOKEN_TTL_SECONDS } from '@/lib/reset-password';
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
@@ -10,6 +11,8 @@ export async function sendPasswordResetEmail(to: string, resetUrl: string) {
     throw new Error('Missing RESEND_API_KEY');
   }
 
+  const expiresInMinutes = Math.floor(RESET_PASSWORD_TOKEN_TTL_SECONDS / 60);
+
   await resend.emails.send({
     from: FROM_EMAIL,
     to,
@@ -18,7 +21,7 @@ export async function sendPasswordResetEmail(to: string, resetUrl: string) {
     html: `
       <p>Click the link below to reset your password:</p>
       <p><a href="${resetUrl}">${resetUrl}</a></p>
-      <p>This link expires in 1 hour.</p>
+      <p>This link expires in ${expiresInMinutes} minutes.</p>
     `,
   });
 }
