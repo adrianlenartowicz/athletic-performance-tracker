@@ -3,7 +3,6 @@ import CredentialsProvider from 'next-auth/providers/credentials';
 import bcrypt from 'bcryptjs';
 import prisma from '@/lib/prisma';
 import type { NextAuthOptions } from 'next-auth';
-import type { JWT } from 'next-auth/jwt';
 
 const LOGIN_RATE_LIMIT = {
   windowMs: 15 * 60 * 1000,
@@ -49,20 +48,26 @@ export const authOptions: NextAuthOptions = {
     updateAge: 60 * 60 * 24,
   },
   callbacks: {
-    async jwt({ token, user }: { token: JWT; user?: any }) {
+    async jwt({ token, user }) {
       if (user) {
         token.id = user.id;
-        token.role = user.role;
-        token.sessionVersion = user.sessionVersion ?? 0;
+        if ('role' in user) {
+          token.role = user.role;
+        }
+        if ('sessionVersion' in user) {
+          token.sessionVersion = user.sessionVersion ?? 0;
+        }
       }
       return token;
     },
 
-    async session({ session, token }: { session: any; token: JWT }) {
+    async session({ session, token }) {
       if (session.user && token.id) {
-        session.user.id = token.id as string;
-        session.user.role = token.role as string;
-        session.user.sessionVersion = token.sessionVersion as number | undefined;
+        session.user.id = token.id;
+        if (token.role) {
+          session.user.role = token.role;
+        }
+        session.user.sessionVersion = token.sessionVersion;
       }
       return session;
     },

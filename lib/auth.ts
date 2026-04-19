@@ -27,8 +27,7 @@ async function requireAuthInternal(options: RequireAuthInternalOptions) {
     redirect('/login');
   }
 
-  const sessionVersion = (session.user as { sessionVersion?: number }).sessionVersion;
-  if (sessionVersion === undefined || user.sessionVersion !== sessionVersion) {
+  if (session.user.sessionVersion === undefined || user.sessionVersion !== session.user.sessionVersion) {
     redirect('/login');
   }
 
