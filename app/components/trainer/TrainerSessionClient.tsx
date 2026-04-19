@@ -28,11 +28,11 @@ type SavedResult = {
 
 type Props = {
   test: TestDefinition;
-  children: Child[];
+  childrenList: Child[];
 };
 
-export default function TrainerSessionClient({ test, children }: Props) {
-  const [queue, setQueue] = useState(children);
+export default function TrainerSessionClient({ test, childrenList }: Props) {
+  const [queue, setQueue] = useState(childrenList);
   const [allAttemptsMap, setAllAttemptsMap] = useState<Record<string, number[]>>({});
   const [value, setValue] = useState<number | null>(null);
   const [justSaved, setJustSaved] = useState(false);
@@ -42,7 +42,7 @@ export default function TrainerSessionClient({ test, children }: Props) {
   const [restoreNotice, setRestoreNotice] = useState<string | null>(null);
 
   const inputRef = useRef<HTMLInputElement>(null);
-  const childrenKey = [...children]
+  const childrenKey = [...childrenList]
     .map((c) => c.id)
     .sort()
     .join(',');
@@ -85,7 +85,7 @@ export default function TrainerSessionClient({ test, children }: Props) {
         return;
       }
 
-      setQueue(parsed.queue ?? children);
+      setQueue(parsed.queue ?? childrenList);
       setAllAttemptsMap(parsed.allAttemptsMap ?? {});
       setValue(parsed.value ?? null);
       setSessionResults(parsed.sessionResults ?? []);
@@ -94,7 +94,7 @@ export default function TrainerSessionClient({ test, children }: Props) {
     } catch {
       // If parsing fails, ignore saved state.
     }
-  }, [storageKey, test.type, children]);
+  }, [storageKey, test.type, childrenKey, childrenList]);
 
   useEffect(() => {
     const hasLocalData =
@@ -105,7 +105,7 @@ export default function TrainerSessionClient({ test, children }: Props) {
     }
     const payload = {
       testType: test.type,
-      childrenIds: [...children].map((c) => c.id).sort(),
+      childrenIds: childrenKey.length > 0 ? childrenKey.split(',') : [],
       queue,
       allAttemptsMap,
       value,
@@ -114,7 +114,7 @@ export default function TrainerSessionClient({ test, children }: Props) {
     };
 
     localStorage.setItem(storageKey, JSON.stringify(payload));
-  }, [storageKey, test.type, children, queue, allAttemptsMap, value, sessionResults]);
+  }, [storageKey, test.type, childrenKey, queue, allAttemptsMap, value, sessionResults]);
 
   useEffect(() => {
     if (queue.length === 0) {
@@ -177,8 +177,7 @@ export default function TrainerSessionClient({ test, children }: Props) {
 
   function removeFinishedChild(childId: string) {
     setAllAttemptsMap((prevAttempts) => {
-      const { [childId]: _, ...rest } = prevAttempts;
-      return rest;
+      return Object.fromEntries(Object.entries(prevAttempts).filter(([id]) => id !== childId));
     });
     setQueue((prevQueue) => prevQueue.slice(1));
   }

@@ -1,7 +1,7 @@
 import { requireAuth } from '@/lib/auth';
 import { redirect } from 'next/navigation';
 import { getChildrenByIds } from '@/lib/queries/children';
-import { TEST_DEFINITIONS } from '@/lib//domain/tests';
+import { TEST_DEFINITIONS } from '@/lib/domain/tests';
 import TrainerSessionClient from '@/app/components/trainer/TrainerSessionClient';
 
 type Props = {
@@ -36,7 +36,7 @@ export default async function TrainerSessionPage({ searchParams }: Props) {
   return (
     <TrainerSessionClient
       test={TEST_DEFINITIONS[testKey as keyof typeof TEST_DEFINITIONS]}
-      children={children}
+      childrenList={children}
     />
   );
 }
