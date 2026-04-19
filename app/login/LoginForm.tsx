@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import { signIn } from 'next-auth/react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useState } from 'react';
@@ -81,12 +82,9 @@ export default function LoginForm() {
       {error && <p className="text-sm text-destructive">{error}</p>}
 
       <div className="text-right">
-        <a
-          href="/reset-password"
-          className="text-sm text-primary underline-offset-4 hover:underline"
-        >
+        <Link href="/reset-password" className="text-sm text-primary underline-offset-4 hover:underline">
           Nie pamiętasz hasła?
-        </a>
+        </Link>
       </div>
 
       <button
