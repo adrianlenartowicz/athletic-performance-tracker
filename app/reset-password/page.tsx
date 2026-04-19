@@ -17,7 +17,7 @@ export default function ResetPasswordRequestPage() {
     try {
       await requestPasswordReset(formData);
       setSubmitted(true);
-    } catch (e) {
+    } catch {
       setError('Wystąpił błąd. Spróbuj ponownie.');
     } finally {
       setIsSubmitting(false);
