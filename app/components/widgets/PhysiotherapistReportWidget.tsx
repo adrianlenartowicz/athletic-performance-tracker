@@ -1,8 +1,9 @@
 'use client';
 
 import { useMemo, useState } from 'react';
-import { FileText } from 'lucide-react';
+import { ChevronDown, ChevronUp, FileText } from 'lucide-react';
 import { WidgetCard } from './WidgetCard';
+import { Button } from '@/components/ui/button';
 import {
   Select,
   SelectContent,
@@ -39,6 +40,7 @@ function BulletList({ items }: { items: string[] }) {
 
 export function PhysiotherapistReportWidget({ reports }: PhysiotherapistReportWidgetProps) {
   const [selectedReportId, setSelectedReportId] = useState(reports[0]?.id ?? '');
+  const [isExpanded, setIsExpanded] = useState(false);
 
   const selectedReport = useMemo(
     () => reports.find((report) => report.id === selectedReportId) ?? reports[0],
@@ -67,7 +69,13 @@ export function PhysiotherapistReportWidget({ reports }: PhysiotherapistReportWi
           </div>
 
           {reports.length > 1 ? (
-            <Select value={selectedReport.id} onValueChange={setSelectedReportId}>
+            <Select
+              value={selectedReport.id}
+              onValueChange={(value) => {
+                setSelectedReportId(value);
+                setIsExpanded(false);
+              }}
+            >
               <SelectTrigger className="w-full sm:w-[220px]">
                 <SelectValue />
               </SelectTrigger>
@@ -105,24 +113,40 @@ export function PhysiotherapistReportWidget({ reports }: PhysiotherapistReportWi
           </div>
         </div>
 
-        <section className="space-y-3">
-          <h2 className="text-sm font-medium">Obserwacje</h2>
-          <BulletList items={selectedReport.observations} />
-        </section>
+        <Button
+          type="button"
+          variant="outline"
+          size="sm"
+          className="w-full sm:w-fit"
+          aria-expanded={isExpanded}
+          onClick={() => setIsExpanded((current) => !current)}
+        >
+          {isExpanded ? <ChevronUp aria-hidden="true" /> : <ChevronDown aria-hidden="true" />}
+          {isExpanded ? 'Ukryj szczegóły raportu' : 'Pokaż szczegóły raportu'}
+        </Button>
 
-        {selectedReport.comparisonToPrevious ? (
-          <section className="rounded-lg border bg-muted/40 p-4">
-            <h2 className="text-sm font-medium">Zmiany od poprzedniego badania</h2>
-            <p className="mt-2 text-sm leading-6 text-muted-foreground">
-              {selectedReport.comparisonToPrevious}
-            </p>
-          </section>
+        {isExpanded ? (
+          <div className="space-y-6">
+            <section className="space-y-3">
+              <h2 className="text-sm font-medium">Obserwacje</h2>
+              <BulletList items={selectedReport.observations} />
+            </section>
+
+            {selectedReport.comparisonToPrevious ? (
+              <section className="rounded-lg border bg-muted/40 p-4">
+                <h2 className="text-sm font-medium">Zmiany od poprzedniego badania</h2>
+                <p className="mt-2 text-sm leading-6 text-muted-foreground">
+                  {selectedReport.comparisonToPrevious}
+                </p>
+              </section>
+            ) : null}
+
+            <section className="space-y-3">
+              <h2 className="text-sm font-medium">Zalecenia</h2>
+              <BulletList items={selectedReport.recommendations} />
+            </section>
+          </div>
         ) : null}
-
-        <section className="space-y-3">
-          <h2 className="text-sm font-medium">Zalecenia</h2>
-          <BulletList items={selectedReport.recommendations} />
-        </section>
       </div>
     </WidgetCard>
   );
