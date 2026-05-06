@@ -15,6 +15,14 @@ type ChildDashboard = {
     name: string;
   };
   widgets: DashboardWidgetData[];
+  physiotherapistReports: {
+    id: string;
+    title: string;
+    reportDate: Date;
+    observations: string[];
+    recommendations: string[];
+    comparisonToPrevious: string | null;
+  }[];
 };
 
 export async function getChildDashboardForUser(
@@ -29,6 +37,17 @@ export async function getChildDashboardForUser(
     include: {
       results: {
         orderBy: { testedAt: 'asc' },
+      },
+      physiotherapistReports: {
+        orderBy: { reportDate: 'desc' },
+        select: {
+          id: true,
+          title: true,
+          reportDate: true,
+          observations: true,
+          recommendations: true,
+          comparisonToPrevious: true,
+        },
       },
     },
   });
@@ -65,5 +84,6 @@ export async function getChildDashboardForUser(
       name: child.name,
     },
     widgets,
+    physiotherapistReports: child.physiotherapistReports,
   };
 }

@@ -52,9 +52,29 @@ model Child {
   parentId String
   parent   User   @relation(fields: [parentId], references: [id])
 
-  results TestResult[]
+  results                TestResult[]
+  physiotherapistReports PhysiotherapistReport[]
 
   createdAt DateTime @default(now())
+}
+
+model PhysiotherapistReport {
+  id      String @id @default(cuid())
+  childId String
+  child   Child  @relation(fields: [childId], references: [id])
+
+  reportDate DateTime
+  title      String   @default("Ocena fizjoterapeutyczna")
+
+  observations         String[]
+  recommendations      String[]
+  comparisonToPrevious String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([childId])
+  @@index([reportDate])
 }
 
 model TestResult {

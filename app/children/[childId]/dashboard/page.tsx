@@ -3,6 +3,7 @@ import { requireAuth } from '@/lib/auth';
 import { getChildDashboardForUser } from '@/lib/queries/dashboard';
 import { DashboardLayout } from '@/app/components/dashboard/dashboard';
 import { TestProgressWidgetServer } from '@/app/components/widgets/TestProgressWidget.server';
+import { PhysiotherapistReportWidget } from '@/app/components/widgets/PhysiotherapistReportWidget';
 
 type Props = {
   params: Promise<{
@@ -21,6 +22,19 @@ export default async function ChildDashboardPage({ params }: Props) {
     redirect('/children');
   }
 
+  const physiotherapistReports = dashboard.physiotherapistReports.map((report) => ({
+    id: report.id,
+    title: report.title,
+    observations: report.observations,
+    recommendations: report.recommendations,
+    comparisonToPrevious: report.comparisonToPrevious,
+    reportDateLabel: report.reportDate.toLocaleDateString('pl-PL', {
+      day: '2-digit',
+      month: 'short',
+      year: 'numeric',
+    }),
+  }));
+
   return (
     <DashboardLayout>
       <div className="md:col-span-2 space-y-2">
@@ -38,6 +52,8 @@ export default async function ChildDashboardPage({ params }: Props) {
           results={widget.results}
         />
       ))}
+
+      <PhysiotherapistReportWidget reports={physiotherapistReports} />
     </DashboardLayout>
   );
 }
