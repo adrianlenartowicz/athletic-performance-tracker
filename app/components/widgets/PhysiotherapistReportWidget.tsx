@@ -46,11 +46,7 @@ export function PhysiotherapistReportWidget({ reports }: PhysiotherapistReportWi
   );
 
   if (!selectedReport) {
-    return (
-      <WidgetCard title="Raport fizjoterapeutyczny" className="md:col-span-2">
-        <p className="text-sm text-muted-foreground">Brak raportu fizjoterapeutycznego.</p>
-      </WidgetCard>
-    );
+    return null;
   }
 
   return (
@@ -64,7 +60,9 @@ export function PhysiotherapistReportWidget({ reports }: PhysiotherapistReportWi
 
             <div>
               <div className="font-medium">{selectedReport.title}</div>
-              <div className="text-sm text-muted-foreground">{selectedReport.reportDateLabel}</div>
+              <div className="text-sm text-muted-foreground">
+                Raport z {selectedReport.reportDateLabel}
+              </div>
             </div>
           </div>
 
@@ -76,12 +74,35 @@ export function PhysiotherapistReportWidget({ reports }: PhysiotherapistReportWi
               <SelectContent>
                 {reports.map((report) => (
                   <SelectItem key={report.id} value={report.id}>
-                    {report.reportDateLabel}
+                    Raport z {report.reportDateLabel}
                   </SelectItem>
                 ))}
               </SelectContent>
             </Select>
           ) : null}
+        </div>
+
+        <div className="grid gap-3 sm:grid-cols-3">
+          <div className="rounded-lg border bg-muted/30 p-3">
+            <div className="text-2xl font-semibold leading-none">
+              {selectedReport.observations.length}
+            </div>
+            <div className="mt-1 text-xs font-medium text-muted-foreground">obserwacji</div>
+          </div>
+          <div className="rounded-lg border bg-muted/30 p-3">
+            <div className="text-2xl font-semibold leading-none">
+              {selectedReport.recommendations.length}
+            </div>
+            <div className="mt-1 text-xs font-medium text-muted-foreground">zaleceń</div>
+          </div>
+          <div className="rounded-lg border bg-muted/30 p-3">
+            <div className="text-2xl font-semibold leading-none">
+              {selectedReport.comparisonToPrevious ? 'Tak' : 'Nie'}
+            </div>
+            <div className="mt-1 text-xs font-medium text-muted-foreground">
+              zmiana od poprzedniego
+            </div>
+          </div>
         </div>
 
         <section className="space-y-3">

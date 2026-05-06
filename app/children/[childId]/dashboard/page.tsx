@@ -30,10 +30,24 @@ export default async function ChildDashboardPage({ params }: Props) {
     comparisonToPrevious: report.comparisonToPrevious,
     reportDateLabel: report.reportDate.toLocaleDateString('pl-PL', {
       day: '2-digit',
-      month: 'short',
+      month: 'long',
       year: 'numeric',
     }),
   }));
+
+  const latestTestDateLabel = dashboard.latestTestDate?.toLocaleDateString('pl-PL', {
+    day: '2-digit',
+    month: 'long',
+    year: 'numeric',
+  });
+  const latestReportDateLabel = dashboard.latestPhysiotherapistReportDate?.toLocaleDateString(
+    'pl-PL',
+    {
+      day: '2-digit',
+      month: 'long',
+      year: 'numeric',
+    }
+  );
 
   return (
     <DashboardLayout>
@@ -43,6 +57,13 @@ export default async function ChildDashboardPage({ params }: Props) {
         </h1>
 
         <p className="text-sm text-muted-foreground">Podsumowanie wyników i rozwoju sprawności</p>
+        {(latestTestDateLabel || latestReportDateLabel) && (
+          <p className="text-sm text-muted-foreground">
+            {latestTestDateLabel ? `Ostatni pomiar: ${latestTestDateLabel}` : null}
+            {latestTestDateLabel && latestReportDateLabel ? ' · ' : null}
+            {latestReportDateLabel ? `Najnowszy raport fizjo: ${latestReportDateLabel}` : null}
+          </p>
+        )}
       </div>
 
       {dashboard.widgets.map((widget) => (
@@ -53,7 +74,9 @@ export default async function ChildDashboardPage({ params }: Props) {
         />
       ))}
 
-      <PhysiotherapistReportWidget reports={physiotherapistReports} />
+      {physiotherapistReports.length > 0 ? (
+        <PhysiotherapistReportWidget reports={physiotherapistReports} />
+      ) : null}
     </DashboardLayout>
   );
 }

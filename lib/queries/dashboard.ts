@@ -15,6 +15,8 @@ type ChildDashboard = {
     name: string;
   };
   widgets: DashboardWidgetData[];
+  latestTestDate: Date | null;
+  latestPhysiotherapistReportDate: Date | null;
   physiotherapistReports: {
     id: string;
     title: string;
@@ -78,12 +80,22 @@ export async function getChildDashboardForUser(
     })
   );
 
+  const latestTestDate =
+    child.results.length > 0
+      ? child.results.reduce(
+          (latest, result) => (result.testedAt > latest ? result.testedAt : latest),
+          child.results[0].testedAt
+        )
+      : null;
+
   return {
     child: {
       id: child.id,
       name: child.name,
     },
     widgets,
+    latestTestDate,
+    latestPhysiotherapistReportDate: child.physiotherapistReports[0]?.reportDate ?? null,
     physiotherapistReports: child.physiotherapistReports,
   };
 }

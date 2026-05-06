@@ -40,8 +40,26 @@ export default async function ChildrenPage() {
 
                 <div className="flex-1">
                   <div className="font-medium">{child.name}</div>
-                  <div className="text-sm text-muted-foreground">
-                    Zobacz postępy i wyniki testów
+                  <div className="mt-1 space-y-1 text-sm text-muted-foreground">
+                    <div>
+                      {child.testTypesCount > 0
+                        ? `${child.testTypesCount} ${
+                            child.testTypesCount === 1 ? 'kategoria testów' : 'kategorie testów'
+                          }`
+                        : 'Brak wyników testów'}
+                    </div>
+                    <div>
+                      {child.latestPhysiotherapistReportDate
+                        ? `Raport fizjo: ${child.latestPhysiotherapistReportDate.toLocaleDateString(
+                            'pl-PL',
+                            {
+                              day: '2-digit',
+                              month: 'long',
+                              year: 'numeric',
+                            }
+                          )}`
+                        : 'Brak raportu fizjo'}
+                    </div>
                   </div>
                 </div>
 
