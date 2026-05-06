@@ -58,11 +58,22 @@ export default async function ChildDashboardPage({ params }: Props) {
 
         <p className="text-sm text-muted-foreground">Podsumowanie wyników i rozwoju sprawności</p>
         {(latestTestDateLabel || latestReportDateLabel) && (
-          <p className="text-sm text-muted-foreground">
-            {latestTestDateLabel ? `Ostatni pomiar: ${latestTestDateLabel}` : null}
-            {latestTestDateLabel && latestReportDateLabel ? ' · ' : null}
-            {latestReportDateLabel ? `Najnowszy raport fizjo: ${latestReportDateLabel}` : null}
-          </p>
+          <div className="space-y-1 pt-1 text-sm">
+            {latestTestDateLabel ? (
+              <div>
+                <span className="font-medium text-foreground">Ostatni pomiar:</span>{' '}
+                <span className="text-muted-foreground">{latestTestDateLabel}</span>
+              </div>
+            ) : null}
+            {latestReportDateLabel ? (
+              <div>
+                <span className="font-medium text-foreground">
+                  Najnowszy raport fizjoterapeutyczny:
+                </span>{' '}
+                <span className="text-muted-foreground">{latestReportDateLabel}</span>
+              </div>
+            ) : null}
+          </div>
         )}
       </div>
 
