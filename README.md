@@ -10,6 +10,10 @@ npm run user:ui:staging
 npm run user:ui:production
 npm run user:create:staging
 npm run user:create:production
+npm run report:create:staging
+npm run report:create:production
+npm run db:migrate:staging
+npm run db:migrate:production
 ```
 
 See [scripts/README.md](scripts/README.md) for the full flow, Vercel env

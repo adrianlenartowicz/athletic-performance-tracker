@@ -33,6 +33,27 @@ export type CreateUserInput = {
   children: ChildInput[];
 };
 
+export type ChildChoice = {
+  id: string;
+  name: string;
+  birthYear: number;
+  parent: {
+    email: string;
+  };
+  group: {
+    name: string;
+    location: string | null;
+  };
+};
+
+export type CreatePhysiotherapistReportInput = {
+  childId: string;
+  reportDate: Date;
+  observations: string[];
+  recommendations: string[];
+  comparisonToPrevious: string | null;
+};
+
 export const TEST_TYPES = Object.keys(TEST_DEFINITIONS) as TestType[];
 
 export function getDatabaseUrl() {
@@ -78,8 +99,60 @@ export async function getGroups(): Promise<GroupChoice[]> {
   });
 }
 
+export async function getChildren(): Promise<ChildChoice[]> {
+  return prisma.child.findMany({
+    orderBy: [{ name: 'asc' }, { birthYear: 'asc' }],
+    select: {
+      id: true,
+      name: true,
+      birthYear: true,
+      parent: {
+        select: { email: true },
+      },
+      group: {
+        select: { name: true, location: true },
+      },
+    },
+  });
+}
+
 export async function disconnectAdminPrisma() {
   await prisma.$disconnect();
+}
+
+export async function createPhysiotherapistReport(input: CreatePhysiotherapistReportInput) {
+  const observations = input.observations.map((item) => item.trim()).filter(Boolean);
+  const recommendations = input.recommendations.map((item) => item.trim()).filter(Boolean);
+
+  if (observations.length === 0) throw new Error('At least one observation is required.');
+  if (recommendations.length === 0) throw new Error('At least one recommendation is required.');
+  if (Number.isNaN(input.reportDate.getTime())) throw new Error('Report date is invalid.');
+
+  const child = await prisma.child.findUnique({
+    where: { id: input.childId },
+    select: { id: true, name: true },
+  });
+
+  if (!child) {
+    throw new Error('Child not found.');
+  }
+
+  return prisma.physiotherapistReport.create({
+    data: {
+      childId: child.id,
+      reportDate: input.reportDate,
+      observations,
+      recommendations,
+      comparisonToPrevious: input.comparisonToPrevious?.trim() || null,
+    },
+    select: {
+      id: true,
+      reportDate: true,
+      child: {
+        select: { name: true },
+      },
+    },
+  });
 }
 
 export async function createUserWithChildren(input: CreateUserInput) {
