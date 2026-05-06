@@ -90,63 +90,46 @@ export function PhysiotherapistReportWidget({ reports }: PhysiotherapistReportWi
           ) : null}
         </div>
 
-        <div className="grid gap-3 sm:grid-cols-3">
-          <div className="rounded-lg border bg-muted/30 p-3">
-            <div className="text-2xl font-semibold leading-none">
-              {selectedReport.observations.length}
-            </div>
-            <div className="mt-1 text-xs font-medium text-muted-foreground">obserwacji</div>
-          </div>
-          <div className="rounded-lg border bg-muted/30 p-3">
-            <div className="text-2xl font-semibold leading-none">
-              {selectedReport.recommendations.length}
-            </div>
-            <div className="mt-1 text-xs font-medium text-muted-foreground">zaleceń</div>
-          </div>
-          <div className="rounded-lg border bg-muted/30 p-3">
-            <div className="text-2xl font-semibold leading-none">
-              {selectedReport.comparisonToPrevious ? 'Tak' : 'Nie'}
-            </div>
-            <div className="mt-1 text-xs font-medium text-muted-foreground">
-              zmiana od poprzedniego
-            </div>
-          </div>
-        </div>
-
-        <Button
-          type="button"
-          variant="outline"
-          size="sm"
-          className="w-full sm:w-fit"
-          aria-expanded={isExpanded}
-          onClick={() => setIsExpanded((current) => !current)}
-        >
-          {isExpanded ? <ChevronUp aria-hidden="true" /> : <ChevronDown aria-hidden="true" />}
-          {isExpanded ? 'Ukryj szczegóły raportu' : 'Pokaż szczegóły raportu'}
-        </Button>
-
-        {isExpanded ? (
-          <div className="space-y-6">
-            <section className="space-y-3">
-              <h2 className="text-sm font-medium">Obserwacje</h2>
-              <BulletList items={selectedReport.observations} />
-            </section>
-
-            {selectedReport.comparisonToPrevious ? (
-              <section className="rounded-lg border bg-muted/40 p-4">
-                <h2 className="text-sm font-medium">Zmiany od poprzedniego badania</h2>
-                <p className="mt-2 text-sm leading-6 text-muted-foreground">
-                  {selectedReport.comparisonToPrevious}
-                </p>
+        <div className="space-y-4">
+          <div className={`relative ${isExpanded ? '' : 'max-h-80 overflow-hidden'}`}>
+            <div className="space-y-6">
+              <section className="space-y-3">
+                <h2 className="text-sm font-medium">Obserwacje</h2>
+                <BulletList items={selectedReport.observations} />
               </section>
-            ) : null}
 
-            <section className="space-y-3">
-              <h2 className="text-sm font-medium">Zalecenia</h2>
-              <BulletList items={selectedReport.recommendations} />
-            </section>
+              {selectedReport.comparisonToPrevious ? (
+                <section className="rounded-lg border bg-muted/40 p-4">
+                  <h2 className="text-sm font-medium">Zmiany od poprzedniego badania</h2>
+                  <p className="mt-2 text-sm leading-6 text-muted-foreground">
+                    {selectedReport.comparisonToPrevious}
+                  </p>
+                </section>
+              ) : null}
+
+              <section className="space-y-3">
+                <h2 className="text-sm font-medium">Zalecenia</h2>
+                <BulletList items={selectedReport.recommendations} />
+              </section>
+            </div>
+
+            {!isExpanded ? (
+              <div className="pointer-events-none absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-card to-transparent" />
+            ) : null}
           </div>
-        ) : null}
+
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            className="w-full sm:w-fit"
+            aria-expanded={isExpanded}
+            onClick={() => setIsExpanded((current) => !current)}
+          >
+            {isExpanded ? <ChevronUp aria-hidden="true" /> : <ChevronDown aria-hidden="true" />}
+            {isExpanded ? 'Zwiń raport' : 'Pokaż cały raport'}
+          </Button>
+        </div>
       </div>
     </WidgetCard>
   );
