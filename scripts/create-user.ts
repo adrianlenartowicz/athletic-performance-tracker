@@ -175,13 +175,15 @@ async function askProductionUser(rl: Interface) {
   if (!email.includes('@')) throw new Error('Invalid email.');
 
   const role = await askRole(rl, true);
-  const password = await askMatching(rl, 'Temporary password');
-  const mustChangePassword = await askProductionBoolean(
+  const generatePassword = await askProductionBoolean(
     rl,
-    'Force password change on first login'
+    'Generate a random temporary password'
   );
+  const password = generatePassword
+    ? generateTemporaryPassword()
+    : await askMatching(rl, 'Temporary password');
 
-  return { email, role, temporaryPassword: password, mustChangePassword };
+  return { email, role, temporaryPassword: password, mustChangePassword: true };
 }
 
 async function askStagingUser(rl: Interface) {
@@ -273,20 +275,26 @@ async function askResult(rl: Interface, production: boolean): Promise<ResultInpu
   };
 
   const testType = await readTestType('Test type: ');
-  const value = await readNumber(`Value (${TEST_DEFINITIONS[testType].unit}): `);
-  const testedAt = await readDate('Test date (YYYY-MM-DD): ');
-
   if (production) {
     const repeatedTestType = await readTestType('Repeat test type: ');
-    const repeatedValue = await readNumber(`Repeat value (${TEST_DEFINITIONS[testType].unit}): `);
-    const repeatedTestedAt = await readDate('Repeat test date (YYYY-MM-DD): ');
+    if (testType !== repeatedTestType) {
+      throw new Error('Test type values do not match.');
+    }
+  }
 
-    if (
-      testType !== repeatedTestType ||
-      value !== repeatedValue ||
-      testedAt.toISOString() !== repeatedTestedAt.toISOString()
-    ) {
-      throw new Error('Result values do not match.');
+  const value = await readNumber(`Value (${TEST_DEFINITIONS[testType].unit}): `);
+  if (production) {
+    const repeatedValue = await readNumber(`Repeat value (${TEST_DEFINITIONS[testType].unit}): `);
+    if (value !== repeatedValue) {
+      throw new Error('Result value does not match.');
+    }
+  }
+
+  const testedAt = await readDate('Test date (YYYY-MM-DD): ');
+  if (production) {
+    const repeatedTestedAt = await readDate('Repeat test date (YYYY-MM-DD): ');
+    if (testedAt.toISOString() !== repeatedTestedAt.toISOString()) {
+      throw new Error('Test date does not match.');
     }
   }
 

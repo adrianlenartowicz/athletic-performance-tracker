@@ -6,6 +6,8 @@ This project includes a guarded CLI for creating users in production and
 staging / non-production environments:
 
 ```bash
+npm run user:ui:staging
+npm run user:ui:production
 npm run user:create:staging
 npm run user:create:production
 ```

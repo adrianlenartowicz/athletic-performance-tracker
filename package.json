@@ -10,6 +10,8 @@
     "vercel:link": "vercel link",
     "user:create:staging": "vercel env run -e preview -- tsx scripts/create-user.ts --environment=staging",
     "user:create:production": "vercel env run -e production -- tsx scripts/create-user.ts --environment=production",
+    "user:ui:staging": "vercel env run -e preview -- tsx scripts/admin-ui-server.ts --environment=staging",
+    "user:ui:production": "vercel env run -e production -- tsx scripts/admin-ui-server.ts --environment=production",
     "format": "prettier --write .",
     "postinstall": "prisma generate",
     "format:check": "prettier --check ."
