@@ -1,5 +1,18 @@
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
+## Admin Scripts
+
+This project includes a guarded CLI for creating users in production and
+staging / non-production environments:
+
+```bash
+npm run user:create:staging
+npm run user:create:production
+```
+
+See [scripts/README.md](scripts/README.md) for the full flow, Vercel env
+handling, and safety notes.
+
 ## Getting Started
 
 First, run the development server:
