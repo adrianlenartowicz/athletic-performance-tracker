@@ -25,8 +25,9 @@ function getWindowStart(nowMs: number, windowMs: number) {
 
 async function getClientIpFromHeaders(): Promise<string | null> {
   const requestHeaders = await headers();
-  const forwarded = requestHeaders.get('x-forwarded-for');
-  if (forwarded) return forwarded.split(',')[0].trim();
+  // x-vercel-forwarded-for is set by Vercel infrastructure and cannot be spoofed by clients
+  const vercelIp = requestHeaders.get('x-vercel-forwarded-for');
+  if (vercelIp) return vercelIp.split(',')[0].trim();
   return requestHeaders.get('x-real-ip');
 }
 

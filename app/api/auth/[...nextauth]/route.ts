@@ -36,8 +36,9 @@ function getHeader(headers: HeadersLike | undefined, name: string) {
 
 function getClientIp(req?: { headers?: HeadersLike }) {
   if (!req) return null;
-  const forwarded = getHeader(req.headers, 'x-forwarded-for');
-  if (forwarded) return forwarded.split(',')[0].trim();
+  // x-vercel-forwarded-for is set by Vercel infrastructure and cannot be spoofed by clients
+  const vercelIp = getHeader(req.headers, 'x-vercel-forwarded-for');
+  if (vercelIp) return vercelIp.split(',')[0].trim();
   return getHeader(req.headers, 'x-real-ip');
 }
 
