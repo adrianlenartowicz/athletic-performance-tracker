@@ -15,7 +15,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
           <LogoutButton />
         </div>
       </header>
-      <main className="mx-auto max-w-2xl px-6 py-10">{children}</main>
+      <main className="px-6 py-10">{children}</main>
     </div>
   );
 }

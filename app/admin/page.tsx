@@ -13,7 +13,7 @@ export default async function AdminPage({
   const resultCreated = params.result === 'created';
 
   return (
-    <div className="space-y-6">
+    <div className="mx-auto max-w-2xl space-y-6">
       <div>
         <h1 className="text-2xl font-semibold tracking-tight">Admin</h1>
         <p className="text-sm text-muted-foreground">Zarządzanie użytkownikami i raportami</p>
@@ -63,6 +63,15 @@ export default async function AdminPage({
             <CardHeader>
               <CardTitle className="text-base">Dodaj wynik testu</CardTitle>
               <CardDescription>Zapisz wynik testu dla wybranego dziecka</CardDescription>
+            </CardHeader>
+          </Card>
+        </Link>
+
+        <Link href="/admin/children">
+          <Card className="transition-colors hover:bg-muted/50">
+            <CardHeader>
+              <CardTitle className="text-base">Postępy dzieci</CardTitle>
+              <CardDescription>Przeglądaj wyniki i raporty dla każdego dziecka</CardDescription>
             </CardHeader>
           </Card>
         </Link>
