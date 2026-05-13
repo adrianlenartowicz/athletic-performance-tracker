@@ -31,6 +31,9 @@ const mockClient: any = {
       if (where.id) return users.find((u) => u.id === where.id) ?? null;
       return null;
     },
+    findMany: async () => {
+      return [...db.getUsers()].sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
+    },
     create: async ({ data }: { data: Record<string, unknown> }) => ({
       id: `dev-new-${Date.now()}`,
       ...data,

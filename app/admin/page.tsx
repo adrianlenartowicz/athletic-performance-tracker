@@ -40,11 +40,13 @@ export default async function AdminPage({
       )}
 
       <div className="grid gap-4">
-        <Link href="/admin/users/new">
+        <Link href="/admin/users">
           <Card className="transition-colors hover:bg-muted/50">
             <CardHeader>
-              <CardTitle className="text-base">Utwórz użytkownika</CardTitle>
-              <CardDescription>Dodaj rodzica lub trenera do systemu</CardDescription>
+              <CardTitle className="text-base">Użytkownicy</CardTitle>
+              <CardDescription>
+                Przeglądaj konta i dodawaj nowych rodziców lub trenerów
+              </CardDescription>
             </CardHeader>
           </Card>
         </Link>
