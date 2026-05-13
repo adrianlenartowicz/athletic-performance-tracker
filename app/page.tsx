@@ -4,6 +4,10 @@ import { requireAuth } from '@/lib/auth';
 export default async function Home() {
   const session = await requireAuth();
 
+  if (session.user.role === 'ADMIN') {
+    redirect('/admin');
+  }
+
   if (session.user.role === 'TRAINER') {
     redirect('/trainer');
   }

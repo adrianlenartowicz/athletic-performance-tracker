@@ -122,4 +122,5 @@ model PasswordResetToken {
 enum UserRole {
   PARENT
   TRAINER
+  ADMIN
 }

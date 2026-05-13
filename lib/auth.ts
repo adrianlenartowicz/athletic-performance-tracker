@@ -45,3 +45,11 @@ export async function requireAuth() {
 export async function requireAuthForPasswordChange() {
   return requireAuthInternal({ allowMustChangePassword: true });
 }
+
+export async function requireAdmin() {
+  const session = await requireAuth();
+  if (session.user.role !== 'ADMIN') {
+    redirect('/');
+  }
+  return session;
+}
