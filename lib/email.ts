@@ -182,16 +182,56 @@ export async function sendPasswordResetEmail(to: string, resetUrl: string) {
   }
 
   const expiresInMinutes = Math.floor(RESET_PASSWORD_TOKEN_TTL_SECONDS / 60);
+  const safeResetUrl = escapeHtml(resetUrl);
+
+  const bodyHtml = `
+    <tr>
+      <td style="padding:40px;">
+        <h1 style="margin:0 0 12px;font-size:22px;font-weight:600;letter-spacing:-0.01em;color:#0f172a;line-height:1.3;">
+          Reset hasła
+        </h1>
+        <p style="margin:0 0 20px;font-size:15px;line-height:1.6;color:#334155;">
+          Otrzymaliśmy prośbę o zresetowanie hasła do Twojego konta. Aby ustawić nowe hasło, kliknij w przycisk poniżej.
+        </p>
+
+        <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin:0 0 20px;">
+          <tr>
+            <td style="background-color:#0f172a;border-radius:8px;">
+              <a href="${safeResetUrl}"
+                 style="display:inline-block;padding:13px 28px;font-size:15px;font-weight:600;color:#ffffff;text-decoration:none;line-height:1;">
+                Ustaw nowe hasło
+              </a>
+            </td>
+          </tr>
+        </table>
+
+        <p style="margin:0 0 16px;font-size:13px;line-height:1.6;color:#64748b;">
+          Link jest jednorazowy i wygasa za ${expiresInMinutes} minut.
+        </p>
+
+        <p style="margin:0 0 16px;font-size:13px;line-height:1.6;color:#64748b;">
+          Jeśli przycisk nie działa, skopiuj poniższy adres do paska przeglądarki:<br />
+          <a href="${safeResetUrl}" style="color:#0ea5e9;word-break:break-all;">${safeResetUrl}</a>
+        </p>
+
+        <p style="margin:0;font-size:13px;line-height:1.6;color:#64748b;">
+          Jeśli nie prosiłeś o reset hasła, zignoruj tę wiadomość — Twoje obecne hasło pozostaje aktywne.
+        </p>
+      </td>
+    </tr>
+  `;
+
+  const html = buildEmailShell({
+    subtitle: 'Reset hasła',
+    preheader: 'Link do zresetowania hasła w panelu Akademii Lekkiej Atletyki Wrocław.',
+    bodyHtml,
+  });
 
   await resend.emails.send({
     from: FROM_EMAIL,
     to,
     replyTo: REPLY_TO_EMAIL,
-    subject: 'Reset your password',
-    html: `
-      <p>Click the link below to reset your password:</p>
-      <p><a href="${resetUrl}">${resetUrl}</a></p>
-      <p>This link expires in ${expiresInMinutes} minutes.</p>
-    `,
+    subject: 'Reset hasła — Akademia Lekkiej Atletyki Wrocław',
+    html,
   });
 }
