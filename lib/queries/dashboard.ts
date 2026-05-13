@@ -27,15 +27,20 @@ type ChildDashboard = {
   }[];
 };
 
+export async function getChildDashboardById(childId: string): Promise<ChildDashboard | null> {
+  return getChildDashboard({ id: childId });
+}
+
 export async function getChildDashboardForUser(
   userId: string,
   childId: string
 ): Promise<ChildDashboard | null> {
+  return getChildDashboard({ id: childId, parentId: userId });
+}
+
+async function getChildDashboard(where: { id: string; parentId?: string }): Promise<ChildDashboard | null> {
   const child = await prisma.child.findFirst({
-    where: {
-      id: childId,
-      parentId: userId,
-    },
+    where,
     include: {
       results: {
         orderBy: { testedAt: 'asc' },
