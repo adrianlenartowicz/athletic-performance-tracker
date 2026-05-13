@@ -24,13 +24,12 @@ const ROLE_COPY: Record<
   PARENT: {
     subtitle: 'Panel rodzica',
     intro:
-      'W naszej Akademii utworzyliśmy dla Ciebie konto rodzica. Tutaj zobaczysz, jak Twoje dziecko rozwija się na treningach.',
+      'Utworzyliśmy dla Ciebie konto rodzica. Tutaj zobaczysz, jak Twoje dziecko rozwija się na treningach.',
     featuresHeading: 'Co znajdziesz w panelu:',
     features: [
-      'Wyniki testów sprawnościowych — sprintów, skoków i innych',
-      'Wykresy postępów po każdym kolejnym pomiarze',
+      'Wyniki testów sprawnościowych z każdego pomiaru',
+      'Postępy dziecka przedstawione na czytelnych wykresach',
       'Raporty fizjoterapeuty z obserwacjami i zaleceniami',
-      'Daty ostatnich pomiarów i ocen w jednym miejscu',
     ],
     closing: 'W razie pytań napisz do nas: akademia@alawroc.pl.',
   },
