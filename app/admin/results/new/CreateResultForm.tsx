@@ -90,7 +90,7 @@ export default function CreateResultForm({ children }: { children: Child[] }) {
           name="value"
           type="number"
           inputMode="decimal"
-          step={definition.step}
+          step="any"
           min={definition.minValue}
           max={definition.maxValue}
           placeholder={`${definition.minValue}–${definition.maxValue} ${definition.unit}`}
