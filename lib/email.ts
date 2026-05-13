@@ -16,7 +16,7 @@ export async function sendWelcomeEmail(to: string, temporaryPassword: string, lo
     from: FROM_EMAIL,
     to,
     replyTo: REPLY_TO_EMAIL,
-    subject: 'Twoje konto w Akademii Ławroc',
+    subject: 'Twoje konto w Akademii Lekkiej Atletyki Wrocław zostało utworzone',
     html: `
       <p>Witaj,</p>
       <p>Twoje konto zostało utworzone. Możesz się zalogować używając poniższych danych:</p>
