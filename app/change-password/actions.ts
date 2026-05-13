@@ -8,16 +8,22 @@ import { requireAuthForPasswordChange } from '@/lib/auth';
 
 const changePasswordSchema = z
   .object({
-    currentPassword: z.string().min(1),
-    newPassword: z.string().min(10).max(128),
-    confirmPassword: z.string().min(10).max(128),
+    currentPassword: z.string().min(1, 'Wpisz aktualne hasło.'),
+    newPassword: z
+      .string()
+      .min(10, 'Hasło musi mieć co najmniej 10 znaków.')
+      .max(128, 'Hasło może mieć maksymalnie 128 znaków.'),
+    confirmPassword: z
+      .string()
+      .min(10, 'Hasło musi mieć co najmniej 10 znaków.')
+      .max(128, 'Hasło może mieć maksymalnie 128 znaków.'),
   })
   .superRefine((data, ctx) => {
     if (data.newPassword !== data.confirmPassword) {
       ctx.addIssue({
         code: 'custom',
         path: ['confirmPassword'],
-        message: 'Passwords do not match',
+        message: 'Hasła nie są zgodne.',
       });
     }
   });

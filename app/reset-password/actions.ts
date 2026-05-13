@@ -45,15 +45,21 @@ export type RequestPasswordResetResult = {
 const resetPasswordSchema = z
   .object({
     token: z.string().min(1),
-    password: z.string().min(10).max(128),
-    confirmPassword: z.string().min(10).max(128),
+    password: z
+      .string()
+      .min(10, 'Hasło musi mieć co najmniej 10 znaków.')
+      .max(128, 'Hasło może mieć maksymalnie 128 znaków.'),
+    confirmPassword: z
+      .string()
+      .min(10, 'Hasło musi mieć co najmniej 10 znaków.')
+      .max(128, 'Hasło może mieć maksymalnie 128 znaków.'),
   })
   .superRefine((data, ctx) => {
     if (data.password !== data.confirmPassword) {
       ctx.addIssue({
         code: 'custom',
         path: ['confirmPassword'],
-        message: 'Passwords do not match',
+        message: 'Hasła nie są zgodne.',
       });
     }
   });
