@@ -7,14 +7,12 @@ const FROM_EMAIL = process.env.EMAIL_FROM ?? 'no-reply@mail.alawroc.pl';
 const REPLY_TO_EMAIL = process.env.EMAIL_REPLY_TO ?? 'akademia@alawroc.pl';
 
 const BRAND_COLOR = '#E0584F';
-const BRAND_COLOR_LIGHT = '#FFE4E0';
 
 export type WelcomeRole = 'PARENT' | 'TRAINER';
 
 const ROLE_COPY: Record<
   WelcomeRole,
   {
-    subtitle: string;
     intro: string;
     featuresHeading: string;
     features: string[];
@@ -22,7 +20,6 @@ const ROLE_COPY: Record<
   }
 > = {
   PARENT: {
-    subtitle: 'Panel rodzica',
     intro:
       'Utworzyliśmy dla Ciebie konto rodzica. Tutaj zobaczysz, jak Twoje dziecko rozwija się na treningach.',
     featuresHeading: 'Co znajdziesz w panelu:',
@@ -34,7 +31,6 @@ const ROLE_COPY: Record<
     closing: 'W razie pytań napisz do nas: akademia@alawroc.pl.',
   },
   TRAINER: {
-    subtitle: 'Panel trenera',
     intro:
       'W naszej Akademii utworzyliśmy dla Ciebie konto trenera. Panel pomoże Ci szybko zapisywać wyniki dzieci z Twoich grup.',
     featuresHeading: 'Co możesz robić w panelu:',
@@ -57,7 +53,7 @@ function escapeHtml(value: string) {
     .replace(/'/g, '&#39;');
 }
 
-function buildEmailShell(opts: { subtitle: string; preheader: string; bodyHtml: string }) {
+function buildEmailShell(opts: { preheader: string; bodyHtml: string }) {
   return `<!DOCTYPE html>
 <html lang="pl">
 <head>
@@ -66,24 +62,28 @@ function buildEmailShell(opts: { subtitle: string; preheader: string; bodyHtml: 
 <meta name="x-apple-disable-message-reformatting" />
 <title>Akademia Lekkiej Atletyki Wrocław</title>
 </head>
-<body style="margin:0;padding:0;background-color:#f4f5f7;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;color:#0f172a;">
+<body style="margin:0;padding:0;background-color:#fafafa;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;color:#0f172a;">
   <div style="display:none;font-size:1px;line-height:1px;max-height:0;max-width:0;opacity:0;overflow:hidden;mso-hide:all;">
     ${escapeHtml(opts.preheader)}
   </div>
-  <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="background-color:#f4f5f7;padding:40px 16px;">
+  <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="background-color:#fafafa;padding:48px 16px;">
     <tr>
       <td align="center">
-        <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="600" style="max-width:600px;background-color:#ffffff;border-radius:12px;overflow:hidden;box-shadow:0 2px 6px rgba(15,23,42,0.04);">
+        <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="560" style="max-width:560px;background-color:#ffffff;border-radius:12px;border:1px solid #eaecef;">
           <tr>
-            <td style="background-color:${BRAND_COLOR};padding:28px 40px;">
-              <div style="font-size:18px;font-weight:600;color:#ffffff;letter-spacing:-0.01em;line-height:1.3;">Akademia Lekkiej Atletyki Wrocław</div>
-              <div style="margin-top:4px;font-size:13px;color:${BRAND_COLOR_LIGHT};">${escapeHtml(opts.subtitle)}</div>
+            <td style="padding:40px 48px 0;">
+              <div style="font-size:11px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:#9aa3af;">
+                Akademia Lekkiej Atletyki Wrocław
+              </div>
+              <div style="margin-top:10px;height:2px;width:32px;background-color:${BRAND_COLOR};font-size:0;line-height:0;">&nbsp;</div>
             </td>
           </tr>
           ${opts.bodyHtml}
+        </table>
+        <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="560" style="max-width:560px;">
           <tr>
-            <td style="background-color:#f8fafc;padding:20px 40px;border-top:1px solid #e2e8f0;">
-              <p style="margin:0;font-size:12px;line-height:1.6;color:#64748b;">
+            <td style="padding:24px 16px 0;text-align:center;">
+              <p style="margin:0;font-size:12px;line-height:1.6;color:#9aa3af;">
                 Wiadomość wygenerowana automatycznie. Jeśli to nie Ty, zignoruj tę wiadomość — nic nie zostanie aktywowane bez kliknięcia w link.
               </p>
             </td>
@@ -108,49 +108,45 @@ export async function sendWelcomeEmail(to: string, setupUrl: string, role: Welco
   const safeSetupUrl = escapeHtml(setupUrl);
 
   const featuresList = copy.features
-    .map((feature) => `<li style="margin:0 0 8px;line-height:1.6;">${escapeHtml(feature)}</li>`)
+    .map((feature) => `<li style="margin:0 0 8px;line-height:1.7;">${escapeHtml(feature)}</li>`)
     .join('');
 
   const bodyHtml = `
     <tr>
-      <td style="padding:40px 40px 8px;">
-        <h1 style="margin:0 0 12px;font-size:22px;font-weight:600;letter-spacing:-0.01em;color:#0f172a;line-height:1.3;">
-          Cześć!
-        </h1>
-        <p style="margin:0 0 20px;font-size:15px;line-height:1.6;color:#334155;">
+      <td style="padding:28px 48px 40px;">
+        <p style="margin:0 0 24px;font-size:16px;line-height:1.6;color:#334155;">
           ${escapeHtml(copy.intro)}
         </p>
 
-        <p style="margin:0 0 8px;font-size:15px;line-height:1.6;color:#0f172a;font-weight:600;">
+        <p style="margin:0 0 8px;font-size:14px;font-weight:600;color:#0f172a;">
           ${escapeHtml(copy.featuresHeading)}
         </p>
-        <ul style="margin:0 0 24px;padding:0 0 0 20px;font-size:14px;color:#334155;">
+        <ul style="margin:0 0 28px;padding:0 0 0 20px;font-size:15px;color:#475569;">
           ${featuresList}
         </ul>
 
-        <p style="margin:0 0 20px;font-size:15px;line-height:1.6;color:#334155;">
+        <p style="margin:0 0 24px;font-size:15px;line-height:1.6;color:#334155;">
           Aby aktywować konto, ustaw własne hasło. Link wygasa po 7 dniach i można go użyć tylko raz.
         </p>
 
-        <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin:0 0 24px;">
+        <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin:0 0 28px;">
           <tr>
             <td style="background-color:${BRAND_COLOR};border-radius:8px;">
               <a href="${safeSetupUrl}"
-                 style="display:inline-block;padding:13px 28px;font-size:15px;font-weight:600;color:#ffffff;text-decoration:none;line-height:1;">
+                 style="display:inline-block;padding:14px 32px;font-size:15px;font-weight:600;color:#ffffff;text-decoration:none;line-height:1;">
                 Ustaw hasło
               </a>
             </td>
           </tr>
         </table>
 
-        <p style="margin:0 0 24px;font-size:13px;line-height:1.6;color:#64748b;">
+        <p style="margin:0 0 24px;font-size:13px;line-height:1.6;color:#94a3b8;">
           Jeśli przycisk nie działa, skopiuj ten adres do paska przeglądarki:<br />
           <a href="${safeSetupUrl}" style="color:${BRAND_COLOR};word-break:break-all;">${safeSetupUrl}</a>
         </p>
-      </td>
-    </tr>
-    <tr>
-      <td style="padding:0 40px 32px;">
+
+        <div style="border-top:1px solid #eaecef;margin:0 0 20px;font-size:0;line-height:0;">&nbsp;</div>
+
         <p style="margin:0;font-size:13px;line-height:1.6;color:#64748b;">
           ${escapeHtml(copy.closing)}
         </p>
@@ -159,7 +155,6 @@ export async function sendWelcomeEmail(to: string, setupUrl: string, role: Welco
   `;
 
   const html = buildEmailShell({
-    subtitle: copy.subtitle,
     preheader: 'Ustaw hasło, aby aktywować konto w Akademii Lekkiej Atletyki Wrocław.',
     bodyHtml,
   });
@@ -183,33 +178,35 @@ export async function sendPasswordResetEmail(to: string, resetUrl: string) {
 
   const bodyHtml = `
     <tr>
-      <td style="padding:40px;">
-        <h1 style="margin:0 0 12px;font-size:22px;font-weight:600;letter-spacing:-0.01em;color:#0f172a;line-height:1.3;">
+      <td style="padding:28px 48px 40px;">
+        <h1 style="margin:0 0 16px;font-size:20px;font-weight:600;letter-spacing:-0.01em;color:#0f172a;line-height:1.3;">
           Reset hasła
         </h1>
-        <p style="margin:0 0 20px;font-size:15px;line-height:1.6;color:#334155;">
+        <p style="margin:0 0 28px;font-size:15px;line-height:1.6;color:#334155;">
           Otrzymaliśmy prośbę o reset hasła do Twojego konta. Aby ustawić nowe, kliknij w przycisk poniżej.
         </p>
 
-        <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin:0 0 20px;">
+        <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin:0 0 24px;">
           <tr>
             <td style="background-color:${BRAND_COLOR};border-radius:8px;">
               <a href="${safeResetUrl}"
-                 style="display:inline-block;padding:13px 28px;font-size:15px;font-weight:600;color:#ffffff;text-decoration:none;line-height:1;">
+                 style="display:inline-block;padding:14px 32px;font-size:15px;font-weight:600;color:#ffffff;text-decoration:none;line-height:1;">
                 Ustaw nowe hasło
               </a>
             </td>
           </tr>
         </table>
 
-        <p style="margin:0 0 16px;font-size:13px;line-height:1.6;color:#64748b;">
+        <p style="margin:0 0 12px;font-size:13px;line-height:1.6;color:#94a3b8;">
           Link jest jednorazowy i wygasa za ${expiresInMinutes} minut.
         </p>
 
-        <p style="margin:0 0 16px;font-size:13px;line-height:1.6;color:#64748b;">
+        <p style="margin:0 0 24px;font-size:13px;line-height:1.6;color:#94a3b8;">
           Jeśli przycisk nie działa, skopiuj ten adres do paska przeglądarki:<br />
           <a href="${safeResetUrl}" style="color:${BRAND_COLOR};word-break:break-all;">${safeResetUrl}</a>
         </p>
+
+        <div style="border-top:1px solid #eaecef;margin:0 0 20px;font-size:0;line-height:0;">&nbsp;</div>
 
         <p style="margin:0;font-size:13px;line-height:1.6;color:#64748b;">
           Jeśli nie prosiłeś o reset hasła, zignoruj tę wiadomość — Twoje obecne hasło pozostaje aktywne.
@@ -219,7 +216,6 @@ export async function sendPasswordResetEmail(to: string, resetUrl: string) {
   `;
 
   const html = buildEmailShell({
-    subtitle: 'Reset hasła',
     preheader: 'Link do zresetowania hasła w Akademii Lekkiej Atletyki Wrocław.',
     bodyHtml,
   });
