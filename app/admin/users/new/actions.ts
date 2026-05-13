@@ -1,15 +1,13 @@
 'use server';
 
 import { redirect } from 'next/navigation';
-import { randomBytes } from 'node:crypto';
+import { randomBytes, createHash } from 'node:crypto';
 import bcrypt from 'bcryptjs';
 import prisma from '@/lib/prisma';
 import { requireAdmin } from '@/lib/auth';
 import { sendWelcomeEmail } from '@/lib/email';
 
-function generateTemporaryPassword() {
-  return `Tmp-${randomBytes(12).toString('base64url')}!`;
-}
+const INVITE_TOKEN_TTL_SECONDS = 7 * 24 * 60 * 60;
 
 export async function createUser(formData: FormData) {
   await requireAdmin();
@@ -34,8 +32,12 @@ export async function createUser(formData: FormData) {
     throw new Error(`A user with this email already exists.`);
   }
 
-  const temporaryPassword = generateTemporaryPassword();
-  const passwordHash = await bcrypt.hash(temporaryPassword, 10);
+  // The user never knows or transmits this hash; they set a real password via the invite link.
+  const placeholderPasswordHash = await bcrypt.hash(randomBytes(32).toString('hex'), 10);
+
+  const rawInviteToken = randomBytes(32).toString('hex');
+  const inviteTokenHash = createHash('sha256').update(rawInviteToken).digest('hex');
+  const inviteExpiresAt = new Date(Date.now() + INVITE_TOKEN_TTL_SECONDS * 1000);
 
   if (role === 'TRAINER') {
     const groupIds = formData.getAll('groupIds') as string[];
@@ -44,11 +46,19 @@ export async function createUser(formData: FormData) {
       const user = await tx.user.create({
         data: {
           email,
-          passwordHash,
+          passwordHash: placeholderPasswordHash,
           role: 'TRAINER',
-          mustChangePassword: true,
+          mustChangePassword: false,
         },
         select: { id: true },
+      });
+
+      await tx.passwordResetToken.create({
+        data: {
+          userId: user.id,
+          tokenHash: inviteTokenHash,
+          expiresAt: inviteExpiresAt,
+        },
       });
 
       if (groupIds.length > 0) {
@@ -83,11 +93,19 @@ export async function createUser(formData: FormData) {
       const user = await tx.user.create({
         data: {
           email,
-          passwordHash,
+          passwordHash: placeholderPasswordHash,
           role: 'PARENT',
-          mustChangePassword: true,
+          mustChangePassword: false,
         },
         select: { id: true },
+      });
+
+      await tx.passwordResetToken.create({
+        data: {
+          userId: user.id,
+          tokenHash: inviteTokenHash,
+          expiresAt: inviteExpiresAt,
+        },
       });
 
       for (const child of children) {
@@ -103,8 +121,9 @@ export async function createUser(formData: FormData) {
     });
   }
 
-  const loginUrl = `${process.env.APP_BASE_URL ?? ''}/login`;
-  await sendWelcomeEmail(email, temporaryPassword, loginUrl);
+  const baseUrl = process.env.APP_BASE_URL ?? 'http://localhost:3000';
+  const setupUrl = `${baseUrl}/reset-password/${rawInviteToken}`;
+  await sendWelcomeEmail(email, setupUrl, role);
 
   redirect(`/admin?created=${encodeURIComponent(email)}`);
 }

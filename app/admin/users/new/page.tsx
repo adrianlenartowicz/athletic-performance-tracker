@@ -9,7 +9,7 @@ export default async function NewUserPage() {
       <div>
         <h1 className="text-2xl font-semibold tracking-tight">Utwórz użytkownika</h1>
         <p className="text-sm text-muted-foreground">
-          Użytkownik otrzyma email z hasłem tymczasowym.
+          Użytkownik otrzyma email z linkiem aktywacyjnym, na którym sam ustawi hasło. Link wygasa po 7 dniach.
         </p>
       </div>
 

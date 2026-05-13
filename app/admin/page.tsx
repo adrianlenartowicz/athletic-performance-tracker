@@ -22,7 +22,7 @@ export default async function AdminPage({
       {createdEmail && (
         <Alert>
           <AlertDescription>
-            Użytkownik <strong>{createdEmail}</strong> został utworzony. Email z hasłem tymczasowym został wysłany.
+            Użytkownik <strong>{createdEmail}</strong> został utworzony. Link aktywacyjny został wysłany na podany adres email.
           </AlertDescription>
         </Alert>
       )}
